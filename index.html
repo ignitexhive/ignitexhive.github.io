@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IgniteX Hive – Send Ripple (XRP) in Luno</title>
+  <style>
+:root {
+  --bg: #0b0d11;
+  --fg: #e7e9ee;
+  --muted: #aab2c5;
+  --accent: #4ea1ff;
+  --warn: #e11d48;
+  --card: #121621;
+  --border: #1e2332;
+  --sidebar: #0f1420;
+}
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, Noto Sans, "Apple Color Emoji","Segoe UI Emoji"; background: var(--bg); color: var(--fg); }
+.layout { display:flex; }
+.sidebar {
+  position: sticky; top:0; align-self:flex-start;
+  height: 100vh; width: 280px; background: var(--sidebar); border-right: 1px solid var(--border);
+  padding: 20px 16px; overflow:auto;
+}
+.brand { font-weight:700; font-size:18px; margin-bottom: 6px; }
+.small { color: var(--muted); font-size: 12px; margin-bottom: 12px; }
+.nav a {
+  display:block; padding:8px 10px; margin:6px 0; border-radius:8px; color: var(--fg); text-decoration:none; border:1px solid transparent;
+}
+.nav a:hover { background:#12182a; border-color: var(--border); }
+.content { flex:1; min-width:0; padding: 28px 26px 60px; }
+.card { background: var(--card); border:1px solid var(--border); border-radius:14px; padding:18px; margin:16px 0 26px; }
+.card p { margin: 10px 0; line-height: 1.55; }
+.step-title { font-weight:700; margin:0 0 10px; display:flex; align-items:center; gap:10px; }
+.step-title .num { display:inline-flex; width:28px; height:28px; align-items:center; justify-content:center; border-radius:8px; background:#1a2131; border:1px solid var(--border); font-weight:700; color:#cdd6f4; }
+.step-img { width:100%; border-radius:12px; border:1px solid var(--border); margin-top:12px; }
+.kbd { background:#111827; border:1px solid #374151; padding:2px 6px; border-radius:6px; font-size: 13px; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+ul { margin: 8px 0 8px 20px; padding:0; }
+ul li { margin: 6px 0; }
+.warn { color: var(--warn); font-weight:700; }
+.red { color: var(--warn); font-weight:700; }
+.footer { color: var(--muted); font-size: 13px; margin-top: 26px; }
+
+/* Mobile tweaks */
+@media (max-width: 960px) {
+  .sidebar { position: fixed; height: auto; width: 100%; top: 0; z-index: 10; display:flex; gap:12px; overflow:auto; white-space: nowrap; }
+  .content { padding-top: 100px; }
+  .nav { display:flex; gap:8px; }
+  .nav a { display:inline-block; }
+}
+</style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">IgniteX Hive</div>
+      <div class="small">Ripple (XRP) – Send Guide</div>
+      <nav class="nav">
+        <a href="#s1">Step 1 – Open Send Menu</a><a href="#s2">Step 2 – Choose Crypto &amp; Confirm Network</a><a href="#s3">Step 3 – Network Warning</a><a href="#s4">Step 4 – Enter Wallet Address</a><a href="#s5">Step 5 – Enter Amount</a><a href="#s6">Step 6 – DRB Status</a><a href="#s7">Step 7 – Confirm Address Owner</a><a href="#s8">Step 8 – Recipient Type</a><a href="#s9">Step 9 – Recipient Details</a><a href="#s10">Step 10 – Exchange Source</a><a href="#s11">Step 11 – Final Confirmation &amp; Proof</a>
+      </nav>
+    </aside>
+    <main class="content">
+      <h1>How to Send Ripple (XRP) in Luno</h1>
+      <div class="small">11-step visual guide • QR-based address entry • Compliance • Proof capture</div>
+
+      <section class="card" id="s1">
+        <div class="step-title"><span class="num">1</span><span>Step 1 – Open Send Menu</span></div>
+        <div class="body">On the Luno home screen, tap the <span class='kbd'>3-dot menu</span> at the top-right corner. From the menu options, select <b>Send</b>.</div>
+        <img class="step-img" src="assets/Step01.jpg" style="width: 25vw; min-width: 30px;" alt="Step 1 – Open Send Menu - Step01.jpg"/>
+      </section>
+    
+      <section class="card" id="s2">
+        <div class="step-title"><span class="num">2</span><span>Step 2 – Choose Crypto & Confirm Network</span></div>
+        <div class="body">From the list of coins, select <b>Ripple (XRP)</b>. Luno only supports the <b class='red'>XRP Ledger</b> network. <span class='warn'>Warning:</span> Sending on other networks (ERC20, BEP20) will permanently lose funds.</div>
+        <img class="step-img" src="assets/Step02_03.jpg" style="width: 25vw; min-width: 30px;" alt="Step 2 – Choose Crypto &amp; Confirm Network - Step02_03.jpg"/>
+      </section>
+    
+      <section class="card" id="s3">
+        <div class="step-title"><span class="num">3</span><span>Step 3 – Network Warning</span></div>
+        <div class="body">Luno shows: <i>“Avoid losing crypto - make sure the destination wallet supports XRP Ledger.”</i> Read carefully, then tap <b>Continue with Send</b>.</div>
+        <img class="step-img" src="assets/Step04.jpg" style="width: 25vw; min-width: 30px;" alt="Step 3 – Network Warning - Step04.jpg"/>
+      </section>
+    
+      <section class="card" id="s4">
+        <div class="step-title"><span class="num">4</span><span>Step 4 – Enter Wallet Address</span></div>
+        <div class="body">Do not type addresses manually. Instead, scan the QR Code from the <b>Master Copy</b> document: <ul><li>Successors → scan their QR Code</li><li>Predecessors → scan their QR Code</li><li>IgniteX Hive (Company) → company QR Code</li></ul></div>
+        <img class="step-img" src="assets/Step05.jpg" style="width: 25vw; min-width: 30px;" alt="Step 4 – Enter Wallet Address - Step05.jpg"/>
+      </section>
+    
+      <section class="card" id="s5">
+        <div class="step-title"><span class="num">5</span><span>Step 5 – Enter Amount</span></div>
+        <div class="body">Enter the transfer value in <b class='red'>MYR</b> only (standard: RM10, RM30, RM50). Add a note/reference if needed.</div>
+        <img class="step-img" src="assets/Step06.jpg" style="width: 25vw; min-width: 30px;" alt="Step 5 – Enter Amount - Step06.jpg"/>
+      </section>
+    
+      <section class="card" id="s6">
+        <div class="step-title"><span class="num">6</span><span>Step 6 – DRB Status</span></div>
+        <div class="body">Answer compliance questions: <ul><li>Do you have <b>Domestic Ringgit Borrowing (DRB)</b>?</li><li>Is the transfer <b>Local</b> or <b>Overseas</b>?</li></ul></div>
+        <img class="step-img" src="assets/Step07.jpg" style="width: 25vw; min-width: 30px;" alt="Step 6 – DRB Status - Step07.jpg"/>
+      </section>
+    
+      <section class="card" id="s7">
+        <div class="step-title"><span class="num">7</span><span>Step 7 – Confirm Address Owner</span></div>
+        <div class="body">Double-check the address belongs to the correct type. Always choose <b>“This is someone else’s address.”</b> for all successors, predecessors, and IgniteX Hive.</div>
+        <img class="step-img" src="assets/Step08.jpg" style="width: 25vw; min-width: 30px;" alt="Step 7 – Confirm Address Owner - Step08.jpg"/>
+      </section>
+    
+      <section class="card" id="s8">
+        <div class="step-title"><span class="num">8</span><span>Step 8 – Recipient Type</span></div>
+        <div class="body">Select recipient type: <ul><li>Successors & Predecessors → <b>A person</b></li><li>IgniteX Hive (Company) → <b>A business/organisation</b></li></ul></div>
+        <img class="step-img" src="assets/Step09.jpg" style="width: 25vw; min-width: 30px;" alt="Step 8 – Recipient Type - Step09.jpg"/>
+      </section>
+    
+      <section class="card" id="s9">
+        <div class="step-title"><span class="num">9</span><span>Step 9 – Recipient Details</span></div>
+        <div class="body">Enter the recipient’s <b>Name</b> and <b>Nationality</b>. For IgniteX Hive, enter company details.</div>
+        <img class="step-img" src="assets/Step10.jpg" style="width: 25vw; min-width: 30px;" alt="Step 9 – Recipient Details - Step10.jpg"/>
+      </section>
+    
+      <section class="card" id="s10">
+        <div class="step-title"><span class="num">10</span><span>Step 10 – Exchange Source</span></div>
+        <div class="body">Choose where the recipient’s address comes from: <ul><li>Successors & Predecessors → <b>Another exchange</b> → Luno</li><li>IgniteX Hive (Company) → <b>Private wallet</b> → Ledger</li></ul></div>
+        <img class="step-img" src="assets/Step111.jpg" style="width: 25vw; min-width: 30px;" alt="Step 10 – Exchange Source - Step111.jpg"/>.    .<img class="step-img" src="assets/Step12.jpg" style="width: 25vw; min-width: 30px;" alt="Step 10 – Exchange Source - Step12.jpg"/>
+      </section>
+    
+      <section class="card" id="s11">
+        <div class="step-title"><span class="num">11</span><span>Step 11 – Final Confirmation & Proof</span></div>
+        <div class="body"><p><span class='warn'>Review your transaction carefully:</span></p>      <ul>        <li>✔️ Wallet address from QR Code</li>        <li>✔️ Destination Tag (if required)</li>        <li>✔️ Amount in <b class='red'>MYR</b></li>        <li>✔️ Recipient type (<b>Person</b>/<b>Business</b>)</li>        <li>✔️ Source (<b>Luno</b> or <b>Ledger</b>)</li>        <li>✔️ Enter <b>2FA code</b> and confirm</li>      </ul>      <p>📸 <b>After completion</b></p>      <p>Take a <b class='red'>full screenshot</b> of the successful transaction screen using the same phone used for the transfer.</p>      <p>The screenshot must clearly show:</p>      <ul>        <li>🔹 Title: “Sent Ripple to …”</li>        <li>🔹 <b>XRP amount</b> sent</li>        <li>🔹 <b>Timestamp</b> (date & time)</li>        <li>🔹 <b>XRP Tag</b> (if applicable)</li>        <li>🔹 <b>Transaction ID</b></li>      </ul>      <p>❌ The screenshot must remain <b class='red'>untampered</b> and <b class='red'>unedited</b>.</p>      <p>⏳ Wait up to <b>5 minutes</b> for the transaction to complete.</p>      <p>📂 Visit your <b>XRP Wallet</b> portfolio in Luno to confirm the transaction under <b>Send Ripple</b>.</p>      <p>📎 Attach the screenshot to the <b>IgniteX Hive Larvae Form</b> as proof.</p></div>
+        <img class="step-img" src="assets/Step15.jpeg" style="width: 25vw; min-width: 30px;" alt="Step 11 – Final Confirmation &amp; Proof - Step15.jpeg"/>
+      </section>
+    
+      <div class="footer">© IgniteX Hive • Operational use only.</div>
+    </main>
+  </div>
+</body>
+</html>
