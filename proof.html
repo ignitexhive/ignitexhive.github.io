@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Submit Proof · IgniteX Hive</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./assets/styles.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-T96TDZ4N9E"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config','G-T96TDZ4N9E');</script>
+  <style>
+    .form-card{max-width:860px;margin:24px auto}
+    .grid-3{display:grid;gap:12px}
+    @media(min-width:900px){.grid-3{grid-template-columns:repeat(3,1fr)}}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <img src="./assets/hero.png" class="logo" alt="IgniteX Hive">
+      <div class="brand">IgniteX Hive</div>
+      <div class="spacer"></div>
+      <a class="btn" href="./index.html">Guide</a>
+      <a class="btn" href="./manual/index.html">Manual</a>
+      <a class="btn" href="./signup.html">Sign‑Up</a>
+      <a class="btn" href="./proof.html">Submit Proof</a>
+      <a class="btn" href="./index.html#contact" data-nav="Contact">Contact</a>
+      <div class="theme"><button id="themeToggle" class="btn" aria-label="Toggle theme">Light Mode</button></div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="card form-card">
+      <h1>Submit Proof of Transactions</h1>
+      <p class="small">Attach 9 screenshots taken on the <strong>same phone</strong>, unedited.</p>
+
+      <div class="notice"><span class="label">Reminder:</span> You should submit after your Luno account is verified and all transfers are complete.</div>
+
+      <form id="proofForm">
+        <div class="row two">
+          <div>
+            <label for="xrpTag">Your XRP Tag ID (10 digits) *</label>
+            <input id="xrpTag" name="xrpTag" required pattern="\d{10}" maxlength="10" inputmode="numeric" placeholder="##########">
+          </div>
+          <div>
+            <label for="email">Email Address *</label>
+            <input id="email" name="email" type="email" required placeholder="you@example.com">
+          </div>
+        </div>
+
+        <div class="row two">
+          <div>
+            <label for="wallet">Your Wallet Address *</label>
+            <input id="wallet" name="wallet" required>
+          </div>
+          <div>
+            <label for="txId">Any one Transaction ID *</label>
+            <input id="txId" name="txId" required placeholder="Hash">
+          </div>
+        </div>
+
+        <h2>Upload Screenshots</h2>
+        <div class="row">
+          <label>Ignite‑X Hive (Company) — 1 image (≤1MB) *</label>
+          <input id="imgCompany" name="imgCompany" type="file" accept=".png,.jpg,.jpeg" required>
+        </div>
+
+        <div class="row">
+          <label>All 7 Predecessors — 7 images total (≤10MB combined) *</label>
+          <input id="imgPred" name="imgPred" type="file" accept=".png,.jpg,.jpeg" multiple required>
+          <div class="help">Exactly 7 images recommended.</div>
+        </div>
+
+        <div class="row">
+          <label>Successor — 1 image (≤1MB) *</label>
+          <input id="imgSucc" name="imgSucc" type="file" accept=".png,.jpg,.jpeg" required>
+        </div>
+
+        <input type="hidden" name="clientTs" id="clientTs">
+
+        <div class="row">
+          <button class="btn" type="submit">Submit</button>
+        </div>
+      </form>
+
+      <div id="msg" class="card" style="display:none;margin-top:14px;"></div>
+    </div>
+  </main>
+
+  <script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxZEGPkccNVsatERoOZAeI7tA3B7cjdh2OA0u7kVjvJhwKVZB29k09-lprpsPBiQ6Pc/exec'; // replace with your Apps Script Web App URL
+
+    const form = document.getElementById('proofForm');
+    const msg  = document.getElementById('msg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Basic client-side checks (sizes)
+      const company = document.getElementById('imgCompany').files[0];
+      const pred    = Array.from(document.getElementById('imgPred').files || []);
+      const succ    = document.getElementById('imgSucc').files[0];
+
+      if (!company || !succ || pred.length === 0) { show('Please attach all required screenshots.', true); return; }
+      if (company.size > 1*1024*1024) { show('Company screenshot must be ≤ 1MB.', true); return; }
+      const totalPred = pred.reduce((n,f)=>n+f.size,0);
+      if (totalPred > 10*1024*1024) { show('Predecessors total must be ≤ 10MB.', true); return; }
+      if (succ.size > 1*1024*1024) { show('Successor screenshot must be ≤ 1MB.', true); return; }
+
+      document.getElementById('clientTs').value = new Date().toISOString();
+
+      const fd = new FormData(form);
+      show('Submitting… please wait.');
+      try {
+        const res = await fetch(WEB_APP_URL, { method: 'POST', body: fd });
+        const data = await res.json();
+        if (data.ok) {
+          show('✅ Proof received. Thank you!', false, true);
+          form.reset();
+        } else {
+          show('❌ Error: ' + (data.error || 'Unknown error'), true);
+        }
+      } catch (err) {
+        show('❌ Network error: ' + err.message, true);
+      }
+    });
+
+    function show(text, isError=false, isSuccess=false) {
+      msg.style.display = 'block';
+      msg.className = 'card ' + (isError ? 'error' : (isSuccess ? 'success' : ''));
+      msg.textContent = text;
+    }
+  </script>
+</body>
+</html>

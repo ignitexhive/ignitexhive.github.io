@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sign‑Up · IgniteX Hive</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./assets/styles.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-T96TDZ4N9E"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config','G-T96TDZ4N9E');</script>
+  <style>
+    .form-card{max-width:760px;margin:24px auto}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <img src="./assets/hero.png" class="logo" alt="IgniteX Hive">
+      <div class="brand">IgniteX Hive</div>
+      <div class="spacer"></div>
+      <a class="btn" href="./index.html">Guide</a>
+      <a class="btn" href="./manual/index.html">Manual</a>
+      <a class="btn" href="./signup.html">Sign‑Up</a>
+      <a class="btn" href="./proof.html">Submit Proof</a>
+      <a class="btn" href="./index.html#contact" data-nav="Contact">Contact</a>
+      <div class="theme"><button id="themeToggle" class="btn" aria-label="Toggle theme">Light Mode</button></div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="card form-card">
+      <h1>Ignite‑X Larvae Sign‑Up Form</h1>
+      <p class="small">Fields marked * are required.</p>
+
+      <form id="signupForm">
+        <div class="row two">
+          <div>
+            <label for="name">Name *</label>
+            <input id="name" name="name" required>
+          </div>
+          <div>
+            <label for="email">Email Address *</label>
+            <input id="email" name="email" type="email" required placeholder="you@example.com">
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="address">Mailing Address *</label>
+            <textarea id="address" name="address" required placeholder="Street, City, State, Postcode, Country"></textarea>
+          </div>
+        </div>
+
+        <div class="row two">
+          <div>
+            <label for="nationality">Nationality *</label>
+            <select id="nationality" name="nationality" required>
+              <option value="" disabled selected>Select</option>
+              <option>Malaysian</option>
+              <option>Non‑Malaysian</option>
+            </select>
+          </div>
+          <div>
+            <label for="telegram">Telegram Username *</label>
+            <input id="telegram" name="telegram" required placeholder="@username">
+          </div>
+        </div>
+
+        <div class="row two">
+          <div>
+            <label for="xrpTag">XRP Tag ID (10 digits) *</label>
+            <input id="xrpTag" name="xrpTag" required pattern="\d{10}" maxlength="10" inputmode="numeric" placeholder="##########">
+            <div class="help">Numeric, exactly 10 digits.</div>
+          </div>
+          <div>
+            <label for="succTag">Successor Tag ID (10 digits) *</label>
+            <input id="succTag" name="succTag" required pattern="\d{10}" maxlength="10" inputmode="numeric" placeholder="##########">
+          </div>
+        </div>
+
+        <input type="hidden" name="clientTs" id="clientTs">
+
+        <div class="row">
+          <button class="btn" type="submit">Submit</button>
+        </div>
+      </form>
+
+      <div id="msg" class="card" style="display:none;margin-top:14px;"></div>
+      <hr>
+      <p class="small">After your account is verified (may take up to 24 hours), please proceed to <a href="./proof.html">Submit Proof</a>.</p>
+    </div>
+  </main>
+
+  <script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxZEGPkccNVsatERoOZAeI7tA3B7cjdh2OA0u7kVjvJhwKVZB29k09-lprpsPBiQ6Pc/exec'; // replace with your Apps Script Web App URL
+
+    const form = document.getElementById('signupForm');
+    const msg  = document.getElementById('msg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      document.getElementById('clientTs').value = new Date().toISOString();
+
+      const fd = new FormData(form);
+      show('Submitting… please wait.');
+      try {
+        const res = await fetch(WEB_APP_URL, { method: 'POST', body: fd });
+        const data = await res.json();
+        if (data.ok) {
+          show('✅ Sign‑up received. Check your email for next steps.', false, true);
+          form.reset();
+        } else {
+          show('❌ Error: ' + (data.error || 'Unknown error'), true);
+        }
+      } catch (err) {
+        show('❌ Network error: ' + err.message, true);
+      }
+    });
+
+    function show(text, isError=false, isSuccess=false) {
+      msg.style.display = 'block';
+      msg.className = 'card ' + (isError ? 'error' : (isSuccess ? 'success' : ''));
+      msg.textContent = text;
+    }
+  </script>
+</body>
+</html>
