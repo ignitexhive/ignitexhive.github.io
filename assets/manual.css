@@ -11,14 +11,13 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:
 a{color:var(--link);text-decoration:none} a:hover{text-decoration:underline}
 
 /* Sticky top nav */
-.nav{position:sticky;top:0;z-index:1000;background:linear-gradient(180deg, rgba(0,0,0,.9), rgba(0,0,0,.75));backdrop-filter:saturate(180%) blur(8px);border-bottom:1px solid var(--border)}
+.nav{position:sticky;top:0;z-index:50;background:rgba(11,11,13,.8);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
 :root.light .nav{background:linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.85))}
-.nav-inner{display:flex;align-items:center;gap:16px;padding:10px 24px}
-.nav img.logo{height:36px;width:auto;border-radius:6px;box-shadow:var(--shadow)}
-.nav .brand{font-weight:800;letter-spacing:.2px}
-.nav .spacer{flex:1}
-.nav a.btn, .nav button.btn{padding:8px 14px;border:1px solid var(--border);border-radius:10px;background:transparent;color:var(--text);cursor:pointer}
-.nav a.btn:hover, .nav button.btn:hover{background:rgba(255,255,255,.05)}
+.nav-inner{max-width:1080px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+.logo{height:28px;width:auto}
+.brand{font-weight:700;letter-spacing:.3px}
+.spacer{flex:1 1 auto}
+.nav a.btn{margin-left:6px}
 
 /* Layout with sticky sidebar */
 .layout{display:flex;gap:22px;max-width:1200px;margin:0 auto;padding:24px}

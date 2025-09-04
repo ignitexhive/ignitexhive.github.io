@@ -7,11 +7,21 @@
   --accent:#ffb300;
   --accent-2:#ffd166;
   --border:#2a2a33;
+  --link:#F4C430;
+}
+:root.light{
+  --bg:#fafafa; 
+  --panel:#ffffff; 
+  --text:#111111; 
+  --muted:#585c6d; 
+  --gold:#C99200; 
+  --border:#e6e6ea; 
+  --link:#AF7A00;
 }
 
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, 'Apple Color Emoji','Segoe UI Emoji'}
-a{color:var(--accent);text-decoration:none}
+a{color:var(--link);text-decoration:none} a:hover{text-decoration:underline}
 a:hover{text-decoration:underline}
 
 .nav{position:sticky;top:0;z-index:50;background:rgba(11,11,13,.8);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}

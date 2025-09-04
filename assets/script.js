@@ -23,20 +23,21 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   }
+  
+  // Theme toggle
   const root = document.documentElement;
-  const themeBtn = document.getElementById('themeToggle');
+  const toggle = document.getElementById('themeToggle');
   const saved = localStorage.getItem('theme') || 'dark';
   if (saved === 'light') root.classList.add('light');
-  if (themeBtn) {
-    themeBtn.textContent = root.classList.contains('light') ? 'Dark Mode' : 'Light Mode';
-    themeBtn.addEventListener('click', () => {
-      root.classList.toggle('light');
-      const mode = root.classList.contains('light') ? 'light' : 'dark';
-      localStorage.setItem('theme', mode);
-      themeBtn.textContent = mode === 'light' ? 'Dark Mode' : 'Light Mode';
-      gaEvent('theme_toggle', { event_label: mode === 'light' ? 'Dark→Light' : 'Light→Dark' });
-    });
-  }
+  toggle.textContent = root.classList.contains('light') ? 'Dark Mode' : 'Light Mode';
+  toggle.addEventListener('click', () => {
+    root.classList.toggle('light');
+    const mode = root.classList.contains('light') ? 'light' : 'dark';
+    localStorage.setItem('theme', mode);
+    toggle.textContent = mode === 'light' ? 'Dark Mode' : 'Light Mode';
+    gaEvent('theme_toggle', { event_label: mode === 'light' ? 'Dark→Light' : 'Light→Dark' });
+  });
+
   const cta = document.getElementById('startHere');
   const step1 = document.getElementById('s1');
   if (cta && step1) {
