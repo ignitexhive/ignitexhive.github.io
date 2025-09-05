@@ -91,7 +91,7 @@
   </main>
 
   <script>
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw3O3f3x0z-zx4a_qrWPezXFzRQSr_ZZiBznZ4eqKyqzzOaLfzDBRFizdb9Vtkpfcgk/exec'; // replace with your Apps Script Web App URL
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwRt0micBhU1HByNV-D4-0DW7ngChb5wtJeBzvIpsSbckzmKVnUseLfWH-0SRNj2gck/exec'; // replace with your Apps Script Web App URL
 
     const form = document.getElementById('proofForm');
     const msg  = document.getElementById('msg');
@@ -113,6 +113,36 @@
       }
       return { ok: false, error: lastErr?.message || 'network error' };
     }
+    
+    // helper: convert File/Blob to base64 string
+    async function toBase64(fileOrBlob) {
+      const buf = await fileOrBlob.arrayBuffer();
+      let binary = '';
+      const bytes = new Uint8Array(buf);
+      const chunk = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+      }
+      return btoa(binary);
+    }
+
+    async function uploadAsBase64(kind, file, tag, clientTs) {
+      const b64 = await toBase64(file);
+      const fd  = new FormData();
+      fd.append('action',   'uploadProofB64');   // ← base64 endpoint
+      fd.append('tag',      tag);
+      fd.append('kind',     kind);
+      fd.append('name',     safeName(file.name || (kind + '.jpg')));
+      fd.append('mimeType', file.type || 'image/jpeg');
+      fd.append('data',     b64);
+      fd.append('clientTs', clientTs);
+      const res = await fetch(WEB_APP_URL, { method: 'POST', body: fd });
+      const txt = await res.text();
+      let data; try { data = JSON.parse(txt); } catch { throw new Error('Non-JSON: ' + txt.slice(0,120)); }
+      if (!data.ok) throw new Error(data.error || 'uploadProofB64 failed');
+      return data;
+    }
+
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -165,30 +195,20 @@
         for (let i = 0; i < files.length; i++) {
           const { kind, file } = files[i];
 
+          // compress (optional)
           const blob = await compressImage(file, kind.startsWith('pred') ? 0.85 : 0.9, 1600);
-
-          // Wrap as a File to guarantee name+type for GAS
           const fname = safeName(file.name || (kind + '.jpg'));
-          const fwrap = new File([blob], fname, { type: blob.type || 'image/jpeg' });
+          const wrapped = new File([blob || file], fname, { type: (blob && blob.type) || file.type || 'image/jpeg' });
 
-          const fd2 = new FormData();
-          fd2.append('action', 'uploadProof');
-          fd2.append('tag', tag);
-          fd2.append('kind', kind);
-          fd2.append('clientTs', document.getElementById('clientTs').value);
-          // IMPORTANT: field name MUST be "file"
-          fd2.append('file', fwrap);
+          // ← use Base64 uploader (avoids multipart redirect issues)
+          const up = await uploadAsBase64(kind, wrapped, tag, document.getElementById('clientTs').value);
 
-          const up = await postWithRetry(fd2);
-          if (!up.ok || !up.data.ok) return show(`❌ Upload failed for ${kind}: ` + (up.data?.error || up.error || 'Unknown'), true);
-
-          // Show a clickable link for each uploaded file
-          if (up.data.fileURL) {
-            show(`Uploaded ${kind} (${i + 1}/${files.length}) → ${up.data.fileURL}`);
+          // show progress + link
+          if (up.fileURL) {
+            show(`Uploaded ${kind} (${i + 1}/${files.length}) → ${up.fileURL}`);
           } else {
-            show(`Uploaded ${kind} (${i + 1}/${files.length}). (No fileURL returned)`);
+            show(`Uploaded ${kind} (${i + 1}/${files.length}).`);
           }
-
           prog.value = Math.round(((i + 1) / files.length) * 100);
         }
 
@@ -215,7 +235,7 @@
       return res.json();
     }
 
-    
+
 
     function show(text, isError=false, isSuccess=false) {
       msg.style.display = 'block';
