@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>IgniteX Hive Test</title>
+</head>
+<body>
+  <h1>IgniteX Hive · Web App Test</h1>
+  <p>
+    <button id="btn">Send Test Signup</button>
+  </p>
+  <pre id="out"></pre>
+
+  <script>
+    // 🔴 Replace this with your actual Web App URL
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycb.../exec";
+
+    document.getElementById('btn').addEventListener('click', async () => {
+      const fd = new FormData();
+      fd.append('action', 'signup');
+      fd.append('name', 'Test User');
+      fd.append('address', '123 Sample Street, KL');
+      fd.append('email', 'test@example.com');
+      fd.append('nationality', 'Malaysian');
+      fd.append('xrpTag', '1234567890');      // 10 digits
+      fd.append('succTag', '0987654321');     // 10 digits
+      fd.append('telegram', '@testuser');
+      fd.append('clientTs', new Date().toISOString());
+
+      document.getElementById('out').textContent = "Submitting…";
+
+      try {
+        const res = await fetch(WEB_APP_URL, { method: "POST", body: fd });
+        const data = await res.json();
+        document.getElementById('out').textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById('out').textContent = "Error: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
