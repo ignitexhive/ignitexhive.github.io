@@ -91,7 +91,7 @@
   </main>
 
   <script>
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSk2SoBcYyS0Su-4CJkhPycpc6EfAPBTDVbXinkH-3hsvAiEnaAnTwOv3BDdL2yJt_/exec'; // replace with your Apps Script Web App URL
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw3O3f3x0z-zx4a_qrWPezXFzRQSr_ZZiBznZ4eqKyqzzOaLfzDBRFizdb9Vtkpfcgk/exec'; // replace with your Apps Script Web App URL
 
     const form = document.getElementById('proofForm');
     const msg  = document.getElementById('msg');
@@ -200,6 +200,22 @@
         show('❌ Network error: ' + err.message, true);
       }
     });
+
+    async function uploadAsBase64(kind, file, tag) {
+      const buf = await file.arrayBuffer();
+      const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+      const fd  = new FormData();
+      fd.append('action','uploadProofB64');
+      fd.append('tag', tag);
+      fd.append('kind', kind);
+      fd.append('name', safeName(file.name || (kind + '.jpg')));
+      fd.append('mimeType', file.type || 'image/jpeg');
+      fd.append('data', b64);
+      const res = await fetch(WEB_APP_URL, { method:'POST', body: fd });
+      return res.json();
+    }
+
+    
 
     function show(text, isError=false, isSuccess=false) {
       msg.style.display = 'block';
