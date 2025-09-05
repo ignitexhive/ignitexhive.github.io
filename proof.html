@@ -21,10 +21,9 @@
       <div class="spacer"></div>
       <a class="btn" href="./index.html">Guide</a>
       <a class="btn" href="./manual/index.html">Manual</a>
-      <a class="btn" href="./signup.html">Sign‑Up</a>
+      <a class="btn" href="./signup.html">Sign-Up</a>
       <a class="btn" href="./proof.html">Submit Proof</a>
       <a class="btn" href="./index.html#contact" data-nav="Contact">Contact</a>
-      <!--<div class="theme"><button id="themeToggle" class="btn" aria-label="Toggle theme">Light Mode</button></div>-->
     </div>
   </nav>
 
@@ -32,8 +31,7 @@
     <div class="card form-card">
       <h1>Submit Proof of Transactions</h1>
       <p class="small">Attach 9 screenshots taken on the <strong>same phone</strong>, unedited.</p>
-
-      <div class="notice"><span class="label">Reminder:</span> You should submit after your Luno account is verified and all transfers are complete.</div>
+      <div class="notice"><span class="label">Reminder:</span> Submit after your Luno account is verified and all transfers are complete.</div>
 
       <form id="proofForm">
         <div class="row two">
@@ -60,7 +58,7 @@
 
         <h2>Upload Screenshots</h2>
         <div class="row">
-          <label>Ignite‑X Hive (Company) — 1 image (≤1MB) *</label>
+          <label>Ignite-X Hive (Company) — 1 image (≤1MB) *</label>
           <input id="imgCompany" name="imgCompany" type="file" accept=".png,.jpg,.jpeg" required>
         </div>
 
@@ -91,58 +89,12 @@
   </main>
 
   <script>
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwRt0micBhU1HByNV-D4-0DW7ngChb5wtJeBzvIpsSbckzmKVnUseLfWH-0SRNj2gck/exec'; // replace with your Apps Script Web App URL
+    // 🔴 Use the SAME working /exec URL you validated in test.html
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyUE9FyHGj76L02H0mivPFQytpOLS7R6gexZgrAPKZ_Wzzb3WoEVcqTyiRdm_5TQb5C/exec';
 
     const form = document.getElementById('proofForm');
     const msg  = document.getElementById('msg');
     const prog = document.getElementById('prog');
-
-    async function postWithRetry(fd, tries = 2) {
-      let lastErr, lastData;
-      for (let i = 0; i < tries; i++) {
-        try {
-          const res = await fetch(WEB_APP_URL, { method: 'POST', body: fd });
-          // read text first (helps surface HTML error pages)
-          const txt = await res.text();
-          try { lastData = JSON.parse(txt); } catch { throw new Error('Non-JSON response: ' + txt.slice(0,120)); }
-          return { ok: true, data: lastData };
-        } catch (e) {
-          lastErr = e;
-          await new Promise(r => setTimeout(r, 600));
-        }
-      }
-      return { ok: false, error: lastErr?.message || 'network error' };
-    }
-    
-    // helper: convert File/Blob to base64 string
-    async function toBase64(fileOrBlob) {
-      const buf = await fileOrBlob.arrayBuffer();
-      let binary = '';
-      const bytes = new Uint8Array(buf);
-      const chunk = 0x8000;
-      for (let i = 0; i < bytes.length; i += chunk) {
-        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
-      }
-      return btoa(binary);
-    }
-
-    async function uploadAsBase64(kind, file, tag, clientTs) {
-      const b64 = await toBase64(file);
-      const fd  = new FormData();
-      fd.append('action',   'uploadProofB64');   // ← base64 endpoint
-      fd.append('tag',      tag);
-      fd.append('kind',     kind);
-      fd.append('name',     safeName(file.name || (kind + '.jpg')));
-      fd.append('mimeType', file.type || 'image/jpeg');
-      fd.append('data',     b64);
-      fd.append('clientTs', clientTs);
-      const res = await fetch(WEB_APP_URL, { method: 'POST', body: fd });
-      const txt = await res.text();
-      let data; try { data = JSON.parse(txt); } catch { throw new Error('Non-JSON: ' + txt.slice(0,120)); }
-      if (!data.ok) throw new Error(data.error || 'uploadProofB64 failed');
-      return data;
-    }
-
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -167,16 +119,17 @@
       try {
         show('Initializing…');
 
-        // 1) initProof
-        const fd1 = new FormData();
-        fd1.append('action', 'initProof');
-        fd1.append('tag', tag);
-        fd1.append('clientTs', document.getElementById('clientTs').value);
-        const init = await postWithRetry(fd1);
-        if (!init.ok || !init.data.ok) return show('❌ initProof failed: ' + (init.data?.error || init.error || 'Unknown'), true);
-        const folderURL = init.data.folderURL || '(folder URL not returned)';
+        // 1) INIT PROOF (create /TAG/proofs/YYYY-MM-DD/)
+        {
+          const fd = new FormData();
+          fd.append('action', 'initProof');
+          fd.append('tag', tag);
+          fd.append('clientTs', document.getElementById('clientTs').value);
+          const init = await fetchJSON(fd);
+          if (!init.ok) return show('❌ initProof failed: ' + (init.error || 'Unknown'), true);
+        }
 
-        // 2) sequential uploads
+        // 2) Upload all files sequentially (Base64) with a "kind" label
         const files = [
           { kind: 'company',  file: company },
           { kind: 'pred1',    file: preds[0] },
@@ -195,24 +148,18 @@
         for (let i = 0; i < files.length; i++) {
           const { kind, file } = files[i];
 
-          // compress (optional)
-          const blob = await compressImage(file, kind.startsWith('pred') ? 0.85 : 0.9, 1600);
-          const fname = safeName(file.name || (kind + '.jpg'));
-          const wrapped = new File([blob || file], fname, { type: (blob && blob.type) || file.type || 'image/jpeg' });
+          // optional compression (keeps under size limits)
+          const blob    = await compressImage(file, kind.startsWith('pred') ? 0.85 : 0.9, 1600);
+          const wrapped = new File([blob || file], safeName(file.name || (kind + '.jpg')), { type: (blob && blob.type) || file.type || 'image/jpeg' });
 
-          // ← use Base64 uploader (avoids multipart redirect issues)
           const up = await uploadAsBase64(kind, wrapped, tag, document.getElementById('clientTs').value);
+          if (!up.ok) return show(`❌ Upload failed for ${kind}: ` + (up.error || 'Unknown'), true);
 
-          // show progress + link
-          if (up.fileURL) {
-            show(`Uploaded ${kind} (${i + 1}/${files.length}) → ${up.fileURL}`);
-          } else {
-            show(`Uploaded ${kind} (${i + 1}/${files.length}).`);
-          }
+          show(`Uploaded ${kind} (${i + 1}/${files.length})${up.fileURL ? ' → ' + up.fileURL : ''}`);
           prog.value = Math.round(((i + 1) / files.length) * 100);
         }
 
-        show(`✅ All proof images uploaded. Folder: ${folderURL}`, false, true);
+        show('✅ All proof images uploaded.', false, true);
         form.reset();
         prog.style.display = 'none';
 
@@ -221,21 +168,22 @@
       }
     });
 
-    async function uploadAsBase64(kind, file, tag) {
-      const buf = await file.arrayBuffer();
-      const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
-      const fd  = new FormData();
-      fd.append('action','uploadProofB64');
-      fd.append('tag', tag);
-      fd.append('kind', kind);
-      fd.append('name', safeName(file.name || (kind + '.jpg')));
-      fd.append('mimeType', file.type || 'image/jpeg');
-      fd.append('data', b64);
-      const res = await fetch(WEB_APP_URL, { method:'POST', body: fd });
-      return res.json();
+    // ---- helpers ----
+    async function fetchJSON(formData, tries = 2) {
+      let lastErr, data;
+      for (let i = 0; i < tries; i++) {
+        try {
+          const res = await fetch(WEB_APP_URL, { method: 'POST', body: formData });
+          const txt = await res.text();
+          data = JSON.parse(txt);
+          return data;
+        } catch (e) {
+          lastErr = e;
+          await new Promise(r => setTimeout(r, 600));
+        }
+      }
+      return { ok:false, error:lastErr?.message || 'network error' };
     }
-
-
 
     function show(text, isError=false, isSuccess=false) {
       msg.style.display = 'block';
@@ -243,6 +191,33 @@
       msg.textContent = text;
     }
     function safeName(name) { return (name || 'upload.jpg').replace(/[^\w\-.]+/g, '_'); }
+
+    // Convert a File/Blob to data URL (works reliably across browsers)
+    function toDataURL(fileOrBlob) {
+      return new Promise((resolve, reject) => {
+        const fr = new FileReader();
+        fr.onerror = () => reject(new Error('FileReader error'));
+        fr.onload  = () => resolve(fr.result); // e.g. data:image/jpeg;base64,XXXX
+        fr.readAsDataURL(fileOrBlob);
+      });
+    }
+
+    async function uploadAsBase64(kind, file, tag, clientTs) {
+      const durl = await toDataURL(file); // send as data URL; server strips prefix
+      const fd   = new FormData();
+      fd.append('action',   'uploadProofB64');
+      fd.append('tag',      tag);
+      fd.append('kind',     kind);
+      fd.append('name',     safeName(file.name || (kind + '.jpg')));
+      fd.append('mimeType', file.type || 'image/jpeg');
+      fd.append('data',     durl);
+      fd.append('clientTs', clientTs);
+
+      const res = await fetch(WEB_APP_URL, { method:'POST', body: fd });
+      const txt = await res.text();
+      let json; try { json = JSON.parse(txt); } catch { return { ok:false, error:'Non-JSON: ' + txt.slice(0,120) }; }
+      return json;
+    }
 
     async function compressImage(file, quality=0.9, maxWidth=1600) {
       try {
@@ -258,6 +233,5 @@
       } catch { return file; }
     }
   </script>
-  <!--<script src="./assets/script.js"></script>-->
 </body>
 </html>
