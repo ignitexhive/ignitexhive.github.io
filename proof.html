@@ -80,6 +80,10 @@
         <div class="row">
           <button class="btn" type="submit">Submit</button>
         </div>
+
+        <div class="row">
+          <progress id="prog" value="0" max="100" style="display:none;width:100%"></progress>
+        </div>
       </form>
 
       <div id="msg" class="card" style="display:none;margin-top:14px;"></div>
@@ -87,40 +91,106 @@
   </main>
 
   <script>
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyGP03yV3cJvurNOWedxMsCeRjdlPOVATna70EL4G2kdpnLHDyXoiVe5NH7291RTGA/exec'; // replace with your Apps Script Web App URL
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSk2SoBcYyS0Su-4CJkhPycpc6EfAPBTDVbXinkH-3hsvAiEnaAnTwOv3BDdL2yJt_/exec'; // replace with your Apps Script Web App URL
 
     const form = document.getElementById('proofForm');
     const msg  = document.getElementById('msg');
+    const prog = document.getElementById('prog');
+
+    async function postWithRetry(fd, tries = 2) {
+      let lastErr, lastData;
+      for (let i = 0; i < tries; i++) {
+        try {
+          const res = await fetch(WEB_APP_URL, { method: 'POST', body: fd });
+          // read text first (helps surface HTML error pages)
+          const txt = await res.text();
+          try { lastData = JSON.parse(txt); } catch { throw new Error('Non-JSON response: ' + txt.slice(0,120)); }
+          return { ok: true, data: lastData };
+        } catch (e) {
+          lastErr = e;
+          await new Promise(r => setTimeout(r, 600));
+        }
+      }
+      return { ok: false, error: lastErr?.message || 'network error' };
+    }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // Basic client-side checks (sizes)
+      const tag = (document.getElementById('xrpTag').value || '').trim();
+      if (!/^\d{10}$/.test(tag)) return show('❌ XRP Tag ID must be exactly 10 digits.', true);
+
       const company = document.getElementById('imgCompany').files[0];
-      const pred    = Array.from(document.getElementById('imgPred').files || []);
+      const preds   = Array.from(document.getElementById('imgPred').files || []);
       const succ    = document.getElementById('imgSucc').files[0];
 
-      if (!company || !succ || pred.length === 0) { show('Please attach all required screenshots.', true); return; }
-      if (company.size > 1*1024*1024) { show('Company screenshot must be ≤ 1MB.', true); return; }
-      const totalPred = pred.reduce((n,f)=>n+f.size,0);
-      if (totalPred > 10*1024*1024) { show('Predecessors total must be ≤ 10MB.', true); return; }
-      if (succ.size > 1*1024*1024) { show('Successor screenshot must be ≤ 1MB.', true); return; }
+      if (!company || !succ || preds.length !== 7)
+        return show('❌ Please attach Company (1), exactly 7 Predecessors, and Successor (1).', true);
+
+      if (company.size > 1 * 1024 * 1024)  return show('❌ Company screenshot must be ≤ 1 MB.', true);
+      if (succ.size    > 1 * 1024 * 1024)  return show('❌ Successor screenshot must be ≤ 1 MB.', true);
+      const totalPred = preds.reduce((n, f) => n + f.size, 0);
+      if (totalPred   > 10 * 1024 * 1024)  return show('❌ Predecessors total must be ≤ 10 MB.', true);
 
       document.getElementById('clientTs').value = new Date().toISOString();
 
-      const fd = new FormData(form);
-      fd.append('action','proof');               // ← add this line
-
-      show('Submitting… please wait.');
       try {
-        const res = await fetch(WEB_APP_URL, { method: 'POST', body: fd });
-        const data = await res.json();
-        if (data.ok) {
-          show('✅ Proof received. Thank you!', false, true);
-          form.reset();
-        } else {
-          show('❌ Error: ' + (data.error || 'Unknown error'), true);
+        show('Initializing…');
+
+        // 1) initProof
+        const fd1 = new FormData();
+        fd1.append('action', 'initProof');
+        fd1.append('tag', tag);
+        fd1.append('clientTs', document.getElementById('clientTs').value);
+        const init = await postWithRetry(fd1);
+        if (!init.ok || !init.data.ok) return show('❌ initProof failed: ' + (init.data?.error || init.error || 'Unknown'), true);
+        const folderURL = init.data.folderURL || '(folder URL not returned)';
+
+        // 2) sequential uploads
+        const files = [
+          { kind: 'company',  file: company },
+          { kind: 'pred1',    file: preds[0] },
+          { kind: 'pred2',    file: preds[1] },
+          { kind: 'pred3',    file: preds[2] },
+          { kind: 'pred4',    file: preds[3] },
+          { kind: 'pred5',    file: preds[4] },
+          { kind: 'pred6',    file: preds[5] },
+          { kind: 'pred7',    file: preds[6] },
+          { kind: 'successor',file: succ }
+        ];
+
+        prog.style.display = 'block';
+        prog.value = 0;
+
+        for (let i = 0; i < files.length; i++) {
+          const { kind, file } = files[i];
+
+          const blob = await compressImage(file, kind.startsWith('pred') ? 0.85 : 0.9, 1600);
+
+          const fd2 = new FormData();
+          fd2.append('action', 'uploadProof');
+          fd2.append('tag', tag);
+          fd2.append('kind', kind);
+          fd2.append('clientTs', document.getElementById('clientTs').value);
+          fd2.append('file', blob, safeName(file.name)); // field name MUST be "file"
+
+          const up = await postWithRetry(fd2);
+          if (!up.ok || !up.data.ok) return show(`❌ Upload failed for ${kind}: ` + (up.data?.error || up.error || 'Unknown'), true);
+
+          // Show a clickable link for each uploaded file
+          if (up.data.fileURL) {
+            show(`Uploaded ${kind} (${i + 1}/${files.length}) → ${up.data.fileURL}`);
+          } else {
+            show(`Uploaded ${kind} (${i + 1}/${files.length}). (No fileURL returned)`);
+          }
+
+          prog.value = Math.round(((i + 1) / files.length) * 100);
         }
+
+        show(`✅ All proof images uploaded. Folder: ${folderURL}`, false, true);
+        form.reset();
+        prog.style.display = 'none';
+
       } catch (err) {
         show('❌ Network error: ' + err.message, true);
       }
@@ -128,8 +198,23 @@
 
     function show(text, isError=false, isSuccess=false) {
       msg.style.display = 'block';
-      msg.className = 'card ' + (isError ? 'error' : (isSuccess ? 'success' : ''));
+      msg.className = (isError ? 'card error' : (isSuccess ? 'card success' : 'card'));
       msg.textContent = text;
+    }
+    function safeName(name) { return (name || 'upload.jpg').replace(/[^\w\-.]+/g, '_'); }
+
+    async function compressImage(file, quality=0.9, maxWidth=1600) {
+      try {
+        if (!('createImageBitmap' in window)) return file;
+        const bmp = await createImageBitmap(file);
+        const scale = Math.min(1, maxWidth / bmp.width);
+        const canvas = document.createElement('canvas');
+        canvas.width  = Math.round(bmp.width  * scale);
+        canvas.height = Math.round(bmp.height * scale);
+        canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
+        const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
+        return blob || file;
+      } catch { return file; }
     }
   </script>
   <!--<script src="./assets/script.js"></script>-->
