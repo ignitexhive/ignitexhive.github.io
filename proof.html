@@ -167,12 +167,17 @@
 
           const blob = await compressImage(file, kind.startsWith('pred') ? 0.85 : 0.9, 1600);
 
+          // Wrap as a File to guarantee name+type for GAS
+          const fname = safeName(file.name || (kind + '.jpg'));
+          const fwrap = new File([blob], fname, { type: blob.type || 'image/jpeg' });
+
           const fd2 = new FormData();
           fd2.append('action', 'uploadProof');
           fd2.append('tag', tag);
           fd2.append('kind', kind);
           fd2.append('clientTs', document.getElementById('clientTs').value);
-          fd2.append('file', blob, safeName(file.name)); // field name MUST be "file"
+          // IMPORTANT: field name MUST be "file"
+          fd2.append('file', fwrap);
 
           const up = await postWithRetry(fd2);
           if (!up.ok || !up.data.ok) return show(`❌ Upload failed for ${kind}: ` + (up.data?.error || up.error || 'Unknown'), true);
