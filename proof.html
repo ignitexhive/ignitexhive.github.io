@@ -109,6 +109,8 @@
       document.getElementById('clientTs').value = new Date().toISOString();
 
       const fd = new FormData(form);
+      fd.append('action','proof');               // ← add this line
+
       show('Submitting… please wait.');
       try {
         const res = await fetch(WEB_APP_URL, { method: 'POST', body: fd });

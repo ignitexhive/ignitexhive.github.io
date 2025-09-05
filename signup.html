@@ -101,12 +101,14 @@
       document.getElementById('clientTs').value = new Date().toISOString();
 
       const fd = new FormData(form);
+      fd.append('action','signup');              // ← add this line
+
       show('Submitting… please wait.');
       try {
         const res = await fetch(WEB_APP_URL, { method: 'POST', body: fd });
         const data = await res.json();
         if (data.ok) {
-          show('✅ Sign‑up received. Check your email for next steps.', false, true);
+          show('✅ Sign-up received. Check your email for next steps.', false, true);
           form.reset();
         } else {
           show('❌ Error: ' + (data.error || 'Unknown error'), true);
