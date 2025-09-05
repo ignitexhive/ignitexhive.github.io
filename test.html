@@ -1,42 +1,65 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>IgniteX Hive Test</title>
+  <meta charset="utf-8" />
+  <title>IgniteX Hive · GAS Web App Test</title>
+  <style>body{font-family:system-ui,Segoe UI,Roboto,sans-serif;max-width:760px;margin:40px auto;padding:0 16px}pre{background:#111;color:#eee;padding:12px;border-radius:8px;overflow:auto}</style>
 </head>
 <body>
-  <h1>IgniteX Hive · Web App Test</h1>
+  <h1>GAS Web App Test</h1>
   <p>
-    <button id="btn">Send Test Signup</button>
+    <label>Web App URL:</label><br/>
+    <input id="url" style="width:100%" value="https://script.google.com/macros/s/AKfycbwuM120KPO1BLVJcRIxVI32_48DYzKn7vdaswer7YDQ939byd6nNuwMuCDGleubYzwF/exec">
   </p>
-  <pre id="out"></pre>
+  <p>
+    <button id="btnGet">GET ping</button>
+    <button id="btnPost">POST signup</button>
+  </p>
+  <pre id="out">Ready…</pre>
 
-  <script>
-    // 🔴 Replace this with your actual Web App URL
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwuM120KPO1BLVJcRIxVI32_48DYzKn7vdaswer7YDQ939byd6nNuwMuCDGleubYzwF/exec";
+<script>
+const $ = id => document.getElementById(id);
+function show(x){ $('out').textContent = x; }
 
-    document.getElementById('btn').addEventListener('click', async () => {
-      const fd = new FormData();
-      fd.append('action', 'signup');
-      fd.append('name', 'Test User');
-      fd.append('address', '123 Sample Street, KL');
-      fd.append('email', 'test@example.com');
-      fd.append('nationality', 'Malaysian');
-      fd.append('xrpTag', '1234567890');      // 10 digits
-      fd.append('succTag', '0987654321');     // 10 digits
-      fd.append('telegram', '@testuser');
-      fd.append('clientTs', new Date().toISOString());
+$('btnGet').addEventListener('click', async () => {
+  const u = $('url').value.trim();
+  show('GET ' + u + ' …');
+  try {
+    const res = await fetch(u, { method: 'GET' });
+    const txt = await res.text();
+    show('Status: ' + res.status + '\n\n' + txt);
+  } catch (e) {
+    show('GET failed: ' + e.message);
+  }
+});
 
-      document.getElementById('out').textContent = "Submitting…";
+$('btnPost').addEventListener('click', async () => {
+  const u = $('url').value.trim();
+  show('POST ' + u + ' …');
+  try {
+    const fd = new FormData();
+    fd.append('action','signup');
+    fd.append('name','Test User');
+    fd.append('address','123 Sample Street, KL');
+    fd.append('email','test@example.com');
+    fd.append('nationality','Malaysian');
+    fd.append('xrpTag','1234567890');  // 10 digits
+    fd.append('succTag','0987654321'); // 10 digits
+    fd.append('telegram','@testuser');
+    fd.append('clientTs', new Date().toISOString());
 
-      try {
-        const res = await fetch(WEB_APP_URL, { method: "POST", body: fd });
-        const data = await res.json();
-        document.getElementById('out').textContent = JSON.stringify(data, null, 2);
-      } catch (err) {
-        document.getElementById('out').textContent = "Error: " + err.message;
-      }
-    });
-  </script>
+    const res = await fetch(u, { method: 'POST', body: fd });
+    const txt = await res.text(); // read text first (in case of non-JSON errors)
+    try {
+      const json = JSON.parse(txt);
+      show('Status: ' + res.status + '\n\n' + JSON.stringify(json, null, 2));
+    } catch {
+      show('Status: ' + res.status + '\n\n' + txt);
+    }
+  } catch (e) {
+    show('POST failed: ' + e.message);
+  }
+});
+</script>
 </body>
 </html>
