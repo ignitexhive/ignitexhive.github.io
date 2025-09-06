@@ -59,18 +59,18 @@
         <h2>Upload Screenshots</h2>
         <div class="row">
           <label>Ignite-X Hive (Company) — 1 image (≤1MB) *</label>
-          <input id="imgCompany" name="imgCompany" type="file" accept=".png,.jpg,.jpeg" required>
+          <input id="imgCompany" name="imgCompany" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" required>
         </div>
 
         <div class="row">
           <label>All 7 Predecessors — 7 images total (≤10MB combined) *</label>
-          <input id="imgPred" name="imgPred" type="file" accept=".png,.jpg,.jpeg" multiple required>
+          <input id="imgPred" name="imgPred" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" multiple required>
           <div class="help">Exactly 7 images recommended.</div>
         </div>
 
         <div class="row">
           <label>Successor — 1 image (≤1MB) *</label>
-          <input id="imgSucc" name="imgSucc" type="file" accept=".png,.jpg,.jpeg" required>
+          <input id="imgSucc" name="imgSucc" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" required>
         </div>
 
         <input type="hidden" name="clientTs" id="clientTs">
@@ -89,8 +89,8 @@
   </main>
 
   <script>
-    // 🔴 Use the SAME working /exec URL you validated in test.html
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyUE9FyHGj76L02H0mivPFQytpOLS7R6gexZgrAPKZ_Wzzb3WoEVcqTyiRdm_5TQb5C/exec';
+    // 🔴 Use the SAME working /exec URL you validated earlier
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzbJDOJCTkAxEzmter3CB98yPh8KIBa0QBo-urX9SFG46aK0pA3LazkGSI_3Id_7Cnl/exec';
 
     const form = document.getElementById('proofForm');
     const msg  = document.getElementById('msg');
@@ -109,6 +109,18 @@
       if (!company || !succ || preds.length !== 7)
         return show('❌ Please attach Company (1), exactly 7 Predecessors, and Successor (1).', true);
 
+      // ---------- Strict client-side type checks ----------
+      const isOk = (f) => {
+        const t = (f.type || '').toLowerCase();
+        const ext = (f.name.split('.').pop() || '').toLowerCase();
+        const mimeOK = (t === 'image/jpeg' || t === 'image/jpg' || t === 'image/png' || t === '');
+        const extOK  = (ext === 'jpg' || ext === 'jpeg' || ext === 'png');
+        return mimeOK && extOK;
+      };
+      const bad = [company, ...preds, succ].find(f => !isOk(f));
+      if (bad) return show(`❌ Unsupported file "${bad.name}". Only JPG/JPEG/PNG allowed.`, true);
+
+      // Size checks
       if (company.size > 1 * 1024 * 1024)  return show('❌ Company screenshot must be ≤ 1 MB.', true);
       if (succ.size    > 1 * 1024 * 1024)  return show('❌ Successor screenshot must be ≤ 1 MB.', true);
       const totalPred = preds.reduce((n, f) => n + f.size, 0);
@@ -119,7 +131,7 @@
       try {
         show('Initializing…');
 
-        // 1) INIT PROOF (create /TAG/proofs/YYYY-MM-DD/)
+        // 1) INIT PROOF (server will refuse if Tag folder does NOT exist)
         {
           const fd = new FormData();
           fd.append('action', 'initProof');
@@ -148,7 +160,7 @@
         for (let i = 0; i < files.length; i++) {
           const { kind, file } = files[i];
 
-          // optional compression (keeps under size limits)
+          // optional compression
           const blob    = await compressImage(file, kind.startsWith('pred') ? 0.85 : 0.9, 1600);
           const wrapped = new File([blob || file], safeName(file.name || (kind + '.jpg')), { type: (blob && blob.type) || file.type || 'image/jpeg' });
 
@@ -197,13 +209,13 @@
       return new Promise((resolve, reject) => {
         const fr = new FileReader();
         fr.onerror = () => reject(new Error('FileReader error'));
-        fr.onload  = () => resolve(fr.result); // e.g. data:image/jpeg;base64,XXXX
+        fr.onload  = () => resolve(fr.result); // data:image/*;base64,XXXX
         fr.readAsDataURL(fileOrBlob);
       });
     }
 
     async function uploadAsBase64(kind, file, tag, clientTs) {
-      const durl = await toDataURL(file); // send as data URL; server strips prefix
+      const durl = await toDataURL(file);
       const fd   = new FormData();
       fd.append('action',   'uploadProofB64');
       fd.append('tag',      tag);
