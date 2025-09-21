@@ -1,243 +1,114 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>IXH — Proof Upload</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <style>
-    :root{--bg:#0b1020;--panel:#121938;--muted:#a7b1d6;--accent:#7c9cff;--ok:#42d392;--bad:#ff6b6b}
-    *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;
-      background:linear-gradient(140deg,#0b1020,#0e1330 55%,#0b0f23);color:#e8ecff}
-    .wrap{max-width:900px;margin:32px auto;padding:24px}
-    .card{background:rgba(18,25,56,.85);border:1px solid rgba(124,156,255,.25);border-radius:16px;padding:20px;backdrop-filter:blur(6px)}
-    h1{margin:0 0 8px;font-size:26px}
-    p.sub{margin:0 0 16px;color:var(--muted)}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0}
-    input,select,button{padding:10px 12px;border-radius:12px;border:1px solid rgba(124,156,255,.25);background:#0d1330;color:#e8ecff;outline:none}
-    input.mono{font-family:ui-monospace,Menlo,Monaco,Consolas,monospace}
-    button{cursor:pointer;background:var(--accent);color:#06102a;font-weight:700;border:0}
-    button.ghost{background:transparent;color:#e8ecff;border:1px dashed rgba(124,156,255,.5)}
-    .pill{padding:8px 12px;border-radius:999px;border:1px solid rgba(124,156,255,.35);background:#0d1330;cursor:pointer}
-    .pill.active{background:var(--accent);color:#06102a;border-color:transparent}
-    .status{display:flex;gap:10px;flex-wrap:wrap}
-    .badge{padding:6px 10px;border-radius:999px;background:#0d1330;border:1px solid rgba(124,156,255,.25);font-size:12px}
-    .badge.ok{border-color:rgba(66,211,146,.7);color:var(--ok)}
-    .msg{margin-top:10px;font-size:14px}
-    .msg.ok{color:var(--ok)} .msg.err{color:var(--bad)}
-    .list{margin-top:14px}
-    .item{display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(124,156,255,.25);
-      border-radius:12px;padding:10px;margin:8px 0;background:#0d1330}
-    .small{font-size:12px;color:var(--muted)}
-    a.link{color:var(--accent)}
-    .divider{height:1px;background:rgba(124,156,255,.25);margin:16px 0}
-  </style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>IXH – Upload Proofs</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/manual.css">
 </head>
 <body>
-  <div class="wrap">
+  <main class="container">
+    <h1 class="title">Upload Payment Proofs</h1>
+
     <div class="card">
-      <h1>IXH — Upload Proofs</h1>
-      <p class="sub">Upload 9 screenshots (company, successor, predecessors). Then click Finalize.</p>
+      <form id="proofForm" class="form" enctype="multipart/form-data">
+        <div class="grid">
+          <div class="field">
+            <label for="xrpTag">Your XRP Tag ID (10 digits)</label>
+            <input id="xrpTag" name="xrpTag" type="text" class="input" inputmode="numeric" pattern="^\d{10}$" required>
+          </div>
+          <div class="field">
+            <label for="succTag">Successor Tag ID (10 digits)</label>
+            <input id="succTag" name="succTag" type="text" class="input" inputmode="numeric" pattern="^\d{10}$" required>
+          </div>
+        </div>
 
-      <div class="row">
-        <label>Tag:</label>
-        <input id="xrpTag" class="mono" maxlength="10" placeholder="10-digit" />
-        <button id="init">Initialize Folder</button>
-        <span id="folderLink" class="small"></span>
-      </div>
+        <p class="muted">Upload up to 9 images (JPG/PNG). Company + predecessors + successor.</p>
 
-      <div class="status">
-        <span class="badge">Uploaded: <b id="uploaded">0</b> / 9</span>
-        <span class="badge">Remaining: <b id="remaining">9</b></span>
-        <span class="badge" id="lockFlag" style="display:none;">Locked</span>
-      </div>
+        <div class="field">
+          <label>Company Screenshot</label>
+          <input type="file" name="imgCompany" accept="image/png,image/jpeg" class="input">
+        </div>
 
-      <div class="divider"></div>
+        <div class="field">
+          <label>Predecessor Screenshots</label>
+          <input type="file" name="imgPred" accept="image/png,image/jpeg" multiple class="input">
+        </div>
 
-      <div class="row">
-        <span>Kind:</span>
-        <button class="pill active" data-kind="company">Company</button>
-        <button class="pill" data-kind="successor">Successor</button>
-        <button class="pill" id="addPred">+ Pred</button>
-        <span class="small">Current: <b id="kindNow">company</b></span>
-      </div>
+        <div class="field">
+          <label>Successor Screenshot</label>
+          <input type="file" name="imgSucc" accept="image/png,image/jpeg" class="input">
+        </div>
 
-      <div class="row">
-        <input id="file" type="file" accept="image/*" capture="environment" />
-        <button id="upload" class="ghost">Upload</button>
-      </div>
-      <div id="msg" class="msg"></div>
+        <div class="actions">
+          <button type="submit" class="btn">Upload</button>
+          <button type="button" id="finalize" class="btn primary">Finalize & Queue OCR</button>
+        </div>
+      </form>
 
-      <div class="list" id="list"></div>
-
-      <div class="divider"></div>
-
-      <div class="row">
-        <label>Finalize delay:</label>
-        <select id="delay">
-          <option value="10m">10 minutes</option>
-          <option value="30m">30 minutes</option>
-          <option value="1h">1 hour</option>
-          <option value="3h">3 hours</option>
-          <option value="6h">6 hours</option>
-        </select>
-        <button id="finalize">Finalize & Queue OCR</button>
-      </div>
-      <div id="finalMsg" class="msg"></div>
+      <div id="result" class="result" hidden></div>
     </div>
-  </div>
+  </main>
 
-<script>
-  // ===== CONFIG =====
-  const API_BASE = 'https://script.google.com/macros/s/AKfycbyIsQSlG4_vSDkxTEy0yqoMJQ6mSJy1ct5LqRefEI1dKkpnqyQsx0wtS2EehSqmNvc/exec'; // same as signup
-  const TAG_RE = /^\d{10}$/;
+  <script>
+    (function(){
+      const BASE = new URL(window.location.href);
+      const APP_URL = BASE.origin + BASE.pathname.replace(/\/[^\/]*$/, '/exec');
 
-  // ===== STATE =====
-  let currentKind = 'company';
-  let predIndex = 1; // increments when "+ Pred" pressed
-  const qs = new URLSearchParams(location.search);
-  const $ = s => document.querySelector(s);
+      const form = document.getElementById('proofForm');
+      const finalizeBtn = document.getElementById('finalize');
+      const result = document.getElementById('result');
 
-  // ===== UI HELPERS =====
-  function setMsg(el, text, ok=false){ el.textContent = text || ''; el.className = 'msg '+(ok?'ok':'err'); }
-  function setCounts(uploaded, remaining, locked){
-    $('#uploaded').textContent = uploaded ?? 0;
-    $('#remaining').textContent = remaining ?? Math.max(9-(uploaded||0),0);
-    $('#lockFlag').style.display = locked ? '' : 'none';
-  }
-  function addListItem(name, size, status, url){
-    const row = document.createElement('div');
-    row.className='item';
-    row.innerHTML = `
-      <div>
-        <div>${name}</div>
-        <div class="small">${(size/1024).toFixed(1)} KB</div>
-      </div>
-      <div>${status}${url?` — <a class="link" href="${url}" target="_blank">open</a>`:''}</div>
-    `;
-    $('#list').prepend(row);
-  }
-  function setFolderLink(url){
-    $('#folderLink').innerHTML = url ? `<a class="link" href="${url}" target="_blank">Open folder</a>` : '';
-  }
+      function show(msg, ok) {
+        result.hidden = false;
+        result.textContent = msg;
+        result.className = 'result ' + (ok ? 'ok' : 'err');
+      }
 
-  // ===== IMAGE → BASE64 (resized) =====
-  async function fileToDataUrl(file, maxSide=1800, quality=0.86){
-    // If already JPEG/PNG and small, you can skip canvas; we still normalise orientation here minimally.
-    const img = await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=URL.createObjectURL(file); });
-    const {width:w, height:h} = img;
-    let tw=w, th=h;
-    if (Math.max(w,h) > maxSide){
-      if (w > h){ tw = maxSide; th = Math.round(h * (maxSide / w)); }
-      else { th = maxSide; tw = Math.round(w * (maxSide / h)); }
-    }
-    const c = document.createElement('canvas');
-    c.width = tw; c.height = th;
-    const ctx = c.getContext('2d');
-    ctx.drawImage(img,0,0,tw,th);
-    // Always JPEG out (backend handles mime); quality ~0.86 keeps text crisp
-    return c.toDataURL('image/jpeg', quality);
-  }
+      form.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        const tag = form.xrpTag.value.trim();
+        const succ = form.succTag.value.trim();
+        if (!/^\d{10}$/.test(tag)) { show('XRP Tag ID must be 10 digits.', false); return; }
+        if (!/^\d{10}$/.test(succ)) { show('Successor Tag ID must be 10 digits.', false); return; }
 
-  // ===== API CALLS (form-encoded) =====
-  async function post(params){
-    const body = new URLSearchParams(params);
-    const res = await fetch(API_BASE, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body });
-    return res.json();
-  }
-  async function initProof(tag){
-    return post({ action:'initProof', xrpTag:tag, clientTs:new Date().toISOString() });
-  }
-  async function uploadB64(tag, kind, dataUrl, origName){
-    // Back end: uploadProofB64 expects: action, xrpTag, kind, name, mimeType, data, clientTs
-    const mime = (dataUrl.match(/^data:(.*?);base64,/)||[])[1] || 'image/jpeg';
-    return post({
-      action:'uploadProofB64',
-      xrpTag:tag,
-      kind,
-      name:origName||(`${kind}.jpg`),
-      mimeType:mime,
-      data:dataUrl, // include data: prefix; server parses it
-      clientTs:new Date().toISOString()
-    });
-  }
-  async function finalize(tag, delayKey){
-    return post({ action:'finalizeProof', xrpTag:tag, delay:delayKey, clientTs:new Date().toISOString() });
-  }
+        const fd = new FormData(form);
+        fd.append('action', 'proof');
 
-  // ===== EVENTS =====
-  // Tag prefill
-  (function(){
-    const t = qs.get('tag') || '';
-    if (t) $('#xrpTag').value = t;
-  })();
+        try {
+          const r = await fetch(APP_URL, { method: 'POST', body: fd });
+          const j = await r.json();
+          if (j.ok) {
+            show('Uploaded. Folder: ' + j.folderURL + ' (' + (j.files||[]).length + ' files)', true);
+          } else {
+            show('Error: ' + (j.error || 'Unknown'), false);
+          }
+        } catch (e) {
+          show('Network error: ' + e, false);
+        }
+      });
 
-  // Kind selectors
-  document.querySelectorAll('.pill[data-kind]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      document.querySelectorAll('.pill[data-kind]').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      currentKind = btn.dataset.kind;
-      $('#kindNow').textContent = currentKind;
-    });
-  });
-  $('#addPred').addEventListener('click', ()=>{
-    currentKind = `pred${predIndex++}`;
-    $('#kindNow').textContent = currentKind;
-    document.querySelectorAll('.pill[data-kind]').forEach(b=>b.classList.remove('active'));
-  });
-
-  // Initialize folder
-  $('#init').addEventListener('click', async ()=>{
-    setMsg($('#msg'),'');
-    const tag = $('#xrpTag').value.trim();
-    if(!TAG_RE.test(tag)){ setMsg($('#msg'),'Tag must be 10 digits.'); return; }
-    try{
-      const r = await initProof(tag);
-      if(!r.ok){ setMsg($('#msg'), r.error || 'Failed to init'); return; }
-      setMsg($('#msg'), 'Ready.', true);
-      setFolderLink(r.folderURL);
-      setCounts(r.uploaded, r.remaining, r.locked);
-    }catch(e){ setMsg($('#msg'), 'Network error: '+e); }
-  });
-
-  // Upload
-  $('#upload').addEventListener('click', async ()=>{
-    setMsg($('#msg'),'');
-    const tag = $('#xrpTag').value.trim();
-    if(!TAG_RE.test(tag)) return setMsg($('#msg'),'Tag must be 10 digits.');
-    const f = $('#file').files[0];
-    if(!f) return setMsg($('#msg'),'Choose an image first.');
-
-    try{
-      const dataUrl = await fileToDataUrl(f);
-      const res = await uploadB64(tag, currentKind, dataUrl, f.name);
-      if(!res.ok){ setMsg($('#msg'), res.error || 'Upload failed'); return; }
-      setMsg($('#msg'),'Uploaded.', true);
-      addListItem(res.fileName || f.name, res.size || f.size, 'ok', res.fileURL);
-      setCounts(res.uploaded, res.remaining, res.locked);
-      if(res.locked) $('#lockFlag').style.display='';
-      if(!$('#folderLink').innerHTML && res.folderURL) setFolderLink(res.folderURL);
-      $('#file').value = '';
-    }catch(e){ setMsg($('#msg'),'Error: '+e); }
-  });
-
-  // Finalize
-  $('#finalize').addEventListener('click', async ()=>{
-    setMsg($('#finalMsg'),'');
-    const tag = $('#xrpTag').value.trim();
-    if(!TAG_RE.test(tag)) return setMsg($('#finalMsg'),'Tag must be 10 digits.');
-    try{
-      const res = await finalize(tag, $('#delay').value);
-      if(!res.ok){ setMsg($('#finalMsg'), res.error || 'Finalize failed'); return; }
-      setMsg($('#finalMsg'), `Queued for OCR (delay ${res.delayMinutes||'~'} min).`, true);
-    }catch(e){ setMsg($('#finalMsg'),'Error: '+e); }
-  });
-
-  // Auto-init if tag present
-  window.addEventListener('load', ()=>{
-    const tag = $('#xrpTag').value.trim();
-    if (TAG_RE.test(tag)) $('#init').click();
-  });
-</script>
+      finalizeBtn.addEventListener('click', async () => {
+        const tag = form.xrpTag.value.trim();
+        if (!/^\d{10}$/.test(tag)) { show('XRP Tag ID must be 10 digits.', false); return; }
+        const payload = new URLSearchParams();
+        payload.set('action','finalizeProof');
+        payload.set('xrpTag', tag);
+        payload.set('force', 'true'); // let backend enforce counts/locks; adjust if you want strict 9
+        try {
+          const r = await fetch(APP_URL, { method:'POST', body: payload });
+          const j = await r.json();
+          if (j.ok) {
+            show('Queued for OCR. Folder: ' + (j.folderURL || ''), true);
+          } else {
+            show('Error: ' + (j.error || 'Unknown'), false);
+          }
+        } catch (e) {
+          show('Network error: ' + e, false);
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

@@ -1,176 +1,135 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>IXH — Sign Up</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <style>
-    :root{--bg:#0b1020;--panel:#121938;--muted:#a7b1d6;--accent:#7c9cff;--ok:#42d392;--bad:#ff6b6b}
-    *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;
-      background:linear-gradient(140deg,#0b1020,#0e1330 55%,#0b0f23);color:#e8ecff}
-    .wrap{max-width:840px;margin:40px auto;padding:24px}
-    .card{background:rgba(18,25,56,.85);border:1px solid rgba(124,156,255,.25);border-radius:16px;padding:24px;backdrop-filter:blur(6px)}
-    h1{margin:0 0 8px;font-size:28px}
-    p.sub{margin:0 0 20px;color:var(--muted)}
-    form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .row{grid-column:1/-1}
-    label{display:block;font-size:13px;margin:6px 0 6px;color:#cdd7ff}
-    input,select,textarea{width:100%;padding:12px 12px;border-radius:12px;border:1px solid rgba(124,156,255,.25);
-      background:#0d1330;color:#e8ecff;outline:none}
-    textarea{min-height:90px;resize:vertical}
-    .split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .hint{font-size:12px;color:var(--muted);margin-top:4px}
-    .actions{display:flex;gap:12px;margin-top:14px}
-    button{padding:12px 16px;border:0;border-radius:12px;background:var(--accent);color:#06102a;font-weight:700;cursor:pointer}
-    button.secondary{background:transparent;color:#e8ecff;border:1px dashed rgba(124,156,255,.5)}
-    .msg{margin-top:16px;font-size:14px}
-    .msg.ok{color:var(--ok)} .msg.err{color:var(--bad)}
-    a.link{color:var(--accent)}
-    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
-  </style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>IXH – Sign Up</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/manual.css">
 </head>
 <body>
-  <div class="wrap">
+  <main class="container">
+    <h1 class="title">Sign Up</h1>
+
     <div class="card">
-      <h1>IXH — New Joiner</h1>
-      <p class="sub">Fill in your details. Your **wallet address** is required and will be saved with your Tag.</p>
-
-      <form id="signupForm" novalidate>
-        <div>
+      <p class="muted">Note: All fields are required.</p>
+      <form id="signupForm" class="form">
+        <div class="field">
           <label for="name">Full Name</label>
-          <input id="name" name="name" autocomplete="name" required />
+          <input id="name" name="name" type="text" class="input" required>
         </div>
 
-        <div>
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" autocomplete="email" required />
-        </div>
-
-        <div class="row">
+        <div class="field">
           <label for="address">Mailing Address</label>
-          <textarea id="address" name="address" placeholder="Street, City, State/Province, Country." required></textarea>
+          <textarea id="address" name="address" class="input" rows="3" required></textarea>
         </div>
 
-        <div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" class="input" required>
+        </div>
+
+        <!-- NEW: Wallet -->
+        <div class="field">
+          <label for="wallet">XRP Wallet Address (classic)</label>
+          <input id="wallet" name="wallet" type="text" class="input"
+                 placeholder="rPqbs9C8r5L4g5dtTyn3UeWhXNywngri5j"
+                 pattern="^r[1-9A-HJ-NP-Za-km-z]{24,34}$" required>
+          <small class="hint">Must start with <b>r</b> and be 25–35 base58 characters (no 0,O,I,l).</small>
+        </div>
+
+        <div class="field">
           <label for="nationality">Nationality</label>
-          <input id="nationality" name="nationality" required />
+          <input id="nationality" name="nationality" type="text" class="input" required>
         </div>
 
-        <div>
-          <label for="telegram">Telegram Username</label>
-          <input id="telegram" name="telegram" placeholder="@username" />
-        </div>
-
-        <div class="row">
-          <label for="wallet">XRP Wallet Address (your receiving address)</label>
-          <input id="wallet" name="wallet" class="mono" placeholder="r..." required />
-          <div class="hint">Must start with “r” and be 25–35 Base58 chars (no I, O, l, 0).</div>
-        </div>
-
-        <div class="grid-3 row">
-          <div>
+        <div class="grid">
+          <div class="field">
             <label for="xrpTag">Your XRP Tag ID (10 digits)</label>
-            <input id="xrpTag" name="xrpTag" inputmode="numeric" maxlength="10" class="mono" required />
+            <input id="xrpTag" name="xrpTag" type="text" class="input" inputmode="numeric" pattern="^\d{10}$" required>
           </div>
-          <div>
+          <div class="field">
             <label for="succTag">Successor Tag ID (10 digits)</label>
-            <input id="succTag" name="succTag" inputmode="numeric" maxlength="10" class="mono" required />
-          </div>
-          <div>
-            <label for="clientTs">Client Timestamp</label>
-            <input id="clientTs" name="clientTs" class="mono" readonly />
+            <input id="succTag" name="succTag" type="text" class="input" inputmode="numeric" pattern="^\d{10}$" required>
           </div>
         </div>
 
-        <div class="actions row">
-          <button type="submit">Create / Update</button>
-          <button type="button" class="secondary" id="toProof">Go to Proof Upload</button>
+        <div class="field">
+          <label for="telegram">Telegram Username</label>
+          <input id="telegram" name="telegram" type="text" class="input" placeholder="@username" required>
         </div>
-        <div id="msg" class="msg"></div>
-        <div id="links" class="msg"></div>
+
+        <div class="actions">
+          <button type="submit" class="btn primary">Submit</button>
+        </div>
       </form>
+
+      <div id="result" class="result" hidden></div>
     </div>
-  </div>
+  </main>
 
-<script>
-  // ====== CONFIG ======
-  const API_BASE = 'https://script.google.com/macros/s/AKfycbyIsQSlG4_vSDkxTEy0yqoMJQ6mSJy1ct5LqRefEI1dKkpnqyQsx0wtS2EehSqmNvc/exec'; // e.g. https://script.google.com/macros/s/....../exec
+  <script>
+    (function(){
+      const BASE = new URL(window.location.href);
+      // If you published your Apps Script as a Web App, replace with that URL:
+      const APP_URL = BASE.origin + BASE.pathname.replace(/\/[^\/]*$/, '/exec'); // same folder → /exec
 
-  // ====== UTILS ======
-  const $ = sel => document.querySelector(sel);
-  const qs = new URLSearchParams(location.search);
-  const TAG_RE   = /^\d{10}$/;
-  const WALLET_RE = /^r[1-9A-HJ-NP-Za-km-z]{25,35}$/;
+      const form = document.getElementById('signupForm');
+      const result = document.getElementById('result');
 
-  function setMsg(text, ok=false){ const el=$("#msg"); el.textContent=text; el.className='msg '+(ok?'ok':'err'); }
-  function setLinks(folderURL, jsonURL){
-    const el=$("#links");
-    if(!folderURL && !jsonURL){ el.innerHTML=''; return; }
-    el.innerHTML = `
-      <div class="msg ok">Saved. <a class="link" href="${folderURL}" target="_blank">Open Tag folder</a>
-      ${jsonURL?` | <a class="link" href="${jsonURL}" target="_blank">Open tag JSON</a>`:''}</div>`;
-  }
-  function saveLocal(key, obj){ localStorage.setItem(key, JSON.stringify(obj)); }
-  function loadLocal(key){ try{return JSON.parse(localStorage.getItem(key)||'null')}catch{return null} }
+      function show(msg, ok) {
+        result.hidden = false;
+        result.textContent = msg;
+        result.className = 'result ' + (ok ? 'ok' : 'err');
+      }
 
-  // Prefill timestamp + remembered values
-  function prefill(){
-    $("#clientTs").value = new Date().toISOString();
-    const fromQS = {
-      xrpTag: qs.get('tag') || qs.get('xrpTag') || '',
-      succTag: qs.get('succ') || ''
-    };
-    if(fromQS.xrpTag) $("#xrpTag").value = fromQS.xrpTag;
-    if(fromQS.succTag) $("#succTag").value = fromQS.succTag;
+      form.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
 
-    const saved = loadLocal('ixh_signup');
-    if(saved){
-      ['name','email','address','nationality','telegram','wallet','xrpTag','succTag'].forEach(id=>{
-        if(saved[id] && !$("#"+id).value) $("#"+id).value = saved[id];
+        const name = form.name.value.trim();
+        const address = form.address.value.trim();
+        const email = form.email.value.trim();
+        const wallet = form.wallet.value.trim();
+        const nationality = form.nationality.value.trim();
+        const xrpTag = form.xrpTag.value.trim();
+        const succTag = form.succTag.value.trim();
+        const telegram = form.telegram.value.trim();
+
+        const reWallet = /^r[1-9A-HJ-NP-Za-km-z]{24,34}$/;
+        if (!reWallet.test(wallet)) {
+          show('Invalid XRP wallet address (must be classic r-address).', false);
+          form.wallet.focus();
+          return;
+        }
+        if (!/^\d{10}$/.test(xrpTag)) { show('XRP Tag ID must be 10 digits.', false); form.xrpTag.focus(); return; }
+        if (!/^\d{10}$/.test(succTag)) { show('Successor Tag ID must be 10 digits.', false); form.succTag.focus(); return; }
+
+        const payload = new URLSearchParams();
+        payload.set('action', 'signup');
+        payload.set('name', name);
+        payload.set('address', address);
+        payload.set('email', email);
+        payload.set('wallet', wallet); // NEW
+        payload.set('nationality', nationality);
+        payload.set('xrpTag', xrpTag);
+        payload.set('succTag', succTag);
+        payload.set('telegram', telegram);
+        payload.set('clientTs', new Date().toISOString());
+
+        try {
+          const r = await fetch(APP_URL, { method:'POST', body: payload });
+          const j = await r.json();
+          if (j.ok) {
+            show('Sign-up saved. Your folder: ' + j.folderURL, true);
+            form.reset();
+          } else {
+            show('Error: ' + (j.error || 'Unknown'), false);
+          }
+        } catch (e) {
+          show('Network error: ' + e, false);
+        }
       });
-    }
-  }
-
-  // ====== SUBMIT ======
-  $("#signupForm").addEventListener('submit', async (ev)=>{
-    ev.preventDefault();
-    setMsg('',true);
-    $("#links").innerHTML='';
-
-    const payload = Object.fromEntries(new FormData(ev.target).entries());
-    payload.action = 'signup';
-    payload.clientTs = new Date().toISOString();
-
-    // Validate
-    if(!TAG_RE.test(payload.xrpTag))  return setMsg('Your XRP Tag ID must be 10 digits.');
-    if(!TAG_RE.test(payload.succTag)) return setMsg('Successor Tag ID must be 10 digits.');
-    if(!WALLET_RE.test(payload.wallet)) return setMsg('Wallet address looks invalid (must be classic r… base58, 25–35 chars).');
-
-    // Persist locally
-    saveLocal('ixh_signup', payload);
-
-    // Send as x-www-form-urlencoded so Apps Script receives in e.parameter
-    const body = new URLSearchParams(payload);
-    try{
-      const res = await fetch(API_BASE, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body });
-      const json = await res.json();
-      if(!json.ok) return setMsg(json.error||'Signup failed');
-      setMsg('Signup saved.', true);
-      setLinks(json.folderURL, json.jsonURL);
-    }catch(err){
-      setMsg('Network / server error: '+err);
-    }
-  });
-
-  // Go to proof page with tag param
-  $("#toProof").addEventListener('click', ()=>{
-    const tag = $("#xrpTag").value.trim();
-    if(!TAG_RE.test(tag)){ setMsg('Enter your 10-digit Tag to continue.'); return; }
-    location.href = `proof.html?tag=${encodeURIComponent(tag)}`;
-  });
-
-  prefill();
-</script>
+    })();
+  </script>
 </body>
 </html>
