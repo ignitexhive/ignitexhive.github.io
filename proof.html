@@ -1,249 +1,243 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Submit Proof · IgniteX Hive</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="./assets/styles.css">
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-T96TDZ4N9E"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config','G-T96TDZ4N9E');</script>
+  <meta charset="utf-8" />
+  <title>IXH — Proof Upload</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    .form-card{max-width:860px;margin:24px auto}
-    .grid-3{display:grid;gap:12px}
-    @media(min-width:900px){.grid-3{grid-template-columns:repeat(3,1fr)}}
+    :root{--bg:#0b1020;--panel:#121938;--muted:#a7b1d6;--accent:#7c9cff;--ok:#42d392;--bad:#ff6b6b}
+    *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;
+      background:linear-gradient(140deg,#0b1020,#0e1330 55%,#0b0f23);color:#e8ecff}
+    .wrap{max-width:900px;margin:32px auto;padding:24px}
+    .card{background:rgba(18,25,56,.85);border:1px solid rgba(124,156,255,.25);border-radius:16px;padding:20px;backdrop-filter:blur(6px)}
+    h1{margin:0 0 8px;font-size:26px}
+    p.sub{margin:0 0 16px;color:var(--muted)}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0}
+    input,select,button{padding:10px 12px;border-radius:12px;border:1px solid rgba(124,156,255,.25);background:#0d1330;color:#e8ecff;outline:none}
+    input.mono{font-family:ui-monospace,Menlo,Monaco,Consolas,monospace}
+    button{cursor:pointer;background:var(--accent);color:#06102a;font-weight:700;border:0}
+    button.ghost{background:transparent;color:#e8ecff;border:1px dashed rgba(124,156,255,.5)}
+    .pill{padding:8px 12px;border-radius:999px;border:1px solid rgba(124,156,255,.35);background:#0d1330;cursor:pointer}
+    .pill.active{background:var(--accent);color:#06102a;border-color:transparent}
+    .status{display:flex;gap:10px;flex-wrap:wrap}
+    .badge{padding:6px 10px;border-radius:999px;background:#0d1330;border:1px solid rgba(124,156,255,.25);font-size:12px}
+    .badge.ok{border-color:rgba(66,211,146,.7);color:var(--ok)}
+    .msg{margin-top:10px;font-size:14px}
+    .msg.ok{color:var(--ok)} .msg.err{color:var(--bad)}
+    .list{margin-top:14px}
+    .item{display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(124,156,255,.25);
+      border-radius:12px;padding:10px;margin:8px 0;background:#0d1330}
+    .small{font-size:12px;color:var(--muted)}
+    a.link{color:var(--accent)}
+    .divider{height:1px;background:rgba(124,156,255,.25);margin:16px 0}
   </style>
 </head>
 <body>
-  <nav class="nav">
-    <div class="nav-inner">
-      <img src="./assets/hero.png" class="logo" alt="IgniteX Hive">
-      <div class="brand">IgniteX Hive</div>
-      <div class="spacer"></div>
-      <a class="btn" href="./index.html">Guide</a>
-      <a class="btn" href="./manual/index.html">Manual</a>
-      <a class="btn" href="./signup.html">Sign-Up</a>
-      <a class="btn" href="./proof.html">Submit Proof</a>
-      <a class="btn" href="./index.html#contact" data-nav="Contact">Contact</a>
+  <div class="wrap">
+    <div class="card">
+      <h1>IXH — Upload Proofs</h1>
+      <p class="sub">Upload 9 screenshots (company, successor, predecessors). Then click Finalize.</p>
+
+      <div class="row">
+        <label>Tag:</label>
+        <input id="xrpTag" class="mono" maxlength="10" placeholder="10-digit" />
+        <button id="init">Initialize Folder</button>
+        <span id="folderLink" class="small"></span>
+      </div>
+
+      <div class="status">
+        <span class="badge">Uploaded: <b id="uploaded">0</b> / 9</span>
+        <span class="badge">Remaining: <b id="remaining">9</b></span>
+        <span class="badge" id="lockFlag" style="display:none;">Locked</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row">
+        <span>Kind:</span>
+        <button class="pill active" data-kind="company">Company</button>
+        <button class="pill" data-kind="successor">Successor</button>
+        <button class="pill" id="addPred">+ Pred</button>
+        <span class="small">Current: <b id="kindNow">company</b></span>
+      </div>
+
+      <div class="row">
+        <input id="file" type="file" accept="image/*" capture="environment" />
+        <button id="upload" class="ghost">Upload</button>
+      </div>
+      <div id="msg" class="msg"></div>
+
+      <div class="list" id="list"></div>
+
+      <div class="divider"></div>
+
+      <div class="row">
+        <label>Finalize delay:</label>
+        <select id="delay">
+          <option value="10m">10 minutes</option>
+          <option value="30m">30 minutes</option>
+          <option value="1h">1 hour</option>
+          <option value="3h">3 hours</option>
+          <option value="6h">6 hours</option>
+        </select>
+        <button id="finalize">Finalize & Queue OCR</button>
+      </div>
+      <div id="finalMsg" class="msg"></div>
     </div>
-  </nav>
+  </div>
 
-  <main class="container">
-    <div class="card form-card">
-      <h1>Submit Proof of Transactions</h1>
-      <p class="small">Attach 9 screenshots taken on the <strong>same phone</strong>, unedited.</p>
-      <div class="notice"><span class="label">Reminder:</span> Submit after your Luno account is verified and all transfers are complete.</div>
+<script>
+  // ===== CONFIG =====
+  const API_BASE = 'https://script.google.com/macros/s/AKfycbyIsQSlG4_vSDkxTEy0yqoMJQ6mSJy1ct5LqRefEI1dKkpnqyQsx0wtS2EehSqmNvc/exec'; // same as signup
+  const TAG_RE = /^\d{10}$/;
 
-      <form id="proofForm">
-        <div class="row two">
-          <div>
-            <label for="xrpTag">Your XRP Tag ID (10 digits) *</label>
-            <input id="xrpTag" name="xrpTag" required pattern="\d{10}" maxlength="10" inputmode="numeric" placeholder="##########">
-          </div>
-          <div>
-            <label for="email">Email Address *</label>
-            <input id="email" name="email" type="email" required placeholder="you@example.com">
-          </div>
-        </div>
+  // ===== STATE =====
+  let currentKind = 'company';
+  let predIndex = 1; // increments when "+ Pred" pressed
+  const qs = new URLSearchParams(location.search);
+  const $ = s => document.querySelector(s);
 
-        <div class="row two">
-          <div>
-            <label for="wallet">Your Wallet Address *</label>
-            <input id="wallet" name="wallet" required>
-          </div>
-          <div>
-            <label for="txId">Provide Company Transaction ID *</label>
-            <input id="txId" name="txId" required placeholder="Hash">
-          </div>
-        </div>
+  // ===== UI HELPERS =====
+  function setMsg(el, text, ok=false){ el.textContent = text || ''; el.className = 'msg '+(ok?'ok':'err'); }
+  function setCounts(uploaded, remaining, locked){
+    $('#uploaded').textContent = uploaded ?? 0;
+    $('#remaining').textContent = remaining ?? Math.max(9-(uploaded||0),0);
+    $('#lockFlag').style.display = locked ? '' : 'none';
+  }
+  function addListItem(name, size, status, url){
+    const row = document.createElement('div');
+    row.className='item';
+    row.innerHTML = `
+      <div>
+        <div>${name}</div>
+        <div class="small">${(size/1024).toFixed(1)} KB</div>
+      </div>
+      <div>${status}${url?` — <a class="link" href="${url}" target="_blank">open</a>`:''}</div>
+    `;
+    $('#list').prepend(row);
+  }
+  function setFolderLink(url){
+    $('#folderLink').innerHTML = url ? `<a class="link" href="${url}" target="_blank">Open folder</a>` : '';
+  }
 
-        <h2>Upload Screenshots</h2>
-        <div class="row">
-          <label>Ignite-X Hive (Company) — 1 image (≤1MB) *</label>
-          <input id="imgCompany" name="imgCompany" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" required>
-        </div>
+  // ===== IMAGE → BASE64 (resized) =====
+  async function fileToDataUrl(file, maxSide=1800, quality=0.86){
+    // If already JPEG/PNG and small, you can skip canvas; we still normalise orientation here minimally.
+    const img = await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=URL.createObjectURL(file); });
+    const {width:w, height:h} = img;
+    let tw=w, th=h;
+    if (Math.max(w,h) > maxSide){
+      if (w > h){ tw = maxSide; th = Math.round(h * (maxSide / w)); }
+      else { th = maxSide; tw = Math.round(w * (maxSide / h)); }
+    }
+    const c = document.createElement('canvas');
+    c.width = tw; c.height = th;
+    const ctx = c.getContext('2d');
+    ctx.drawImage(img,0,0,tw,th);
+    // Always JPEG out (backend handles mime); quality ~0.86 keeps text crisp
+    return c.toDataURL('image/jpeg', quality);
+  }
 
-        <div class="row">
-          <label>All 7 Predecessors — 7 images total (≤10MB combined) *</label>
-          <input id="imgPred" name="imgPred" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" multiple required>
-          <div class="help">Exactly 7 images recommended.</div>
-        </div>
-
-        <div class="row">
-          <label>Successor — 1 image (≤1MB) *</label>
-          <input id="imgSucc" name="imgSucc" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" required>
-        </div>
-
-        <input type="hidden" name="clientTs" id="clientTs">
-
-        <div class="row">
-          <button class="btn" type="submit">Submit</button>
-        </div>
-
-        <div class="row">
-          <progress id="prog" value="0" max="100" style="display:none;width:100%"></progress>
-        </div>
-      </form>
-
-      <div id="msg" class="card" style="display:none;margin-top:14px;"></div>
-    </div>
-  </main>
-
-  <script>
-    // 🔴 Use the SAME working /exec URL you validated earlier
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwYKoLYFn7pfw3GbbxgOmBc0gL7K9vHf_L9F3UTS-s4DhvigHZ6XyTCzSeJfq-5L2IN/exec';
-
-    const form = document.getElementById('proofForm');
-    const msg  = document.getElementById('msg');
-    const prog = document.getElementById('prog');
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const tag = (document.getElementById('xrpTag').value || '').trim();
-      if (!/^\d{10}$/.test(tag)) return show('❌ XRP Tag ID must be exactly 10 digits.', true);
-
-      const company = document.getElementById('imgCompany').files[0];
-      const preds   = Array.from(document.getElementById('imgPred').files || []);
-      const succ    = document.getElementById('imgSucc').files[0];
-
-      if (!company || !succ || preds.length !== 7)
-        return show('❌ Please attach Company (1), exactly 7 Predecessors, and Successor (1).', true);
-
-      // ---------- Strict client-side type checks ----------
-      const isOk = (f) => {
-        const t = (f.type || '').toLowerCase();
-        const ext = (f.name.split('.').pop() || '').toLowerCase();
-        const mimeOK = (t === 'image/jpeg' || t === 'image/jpg' || t === 'image/png' || t === '');
-        const extOK  = (ext === 'jpg' || ext === 'jpeg' || ext === 'png');
-        return mimeOK && extOK;
-      };
-      const bad = [company, ...preds, succ].find(f => !isOk(f));
-      if (bad) return show(`❌ Unsupported file "${bad.name}". Only JPG/JPEG/PNG allowed.`, true);
-
-      // Size checks
-      if (company.size > 1 * 1024 * 1024)  return show('❌ Company screenshot must be ≤ 1 MB.', true);
-      if (succ.size    > 1 * 1024 * 1024)  return show('❌ Successor screenshot must be ≤ 1 MB.', true);
-      const totalPred = preds.reduce((n, f) => n + f.size, 0);
-      if (totalPred   > 10 * 1024 * 1024)  return show('❌ Predecessors total must be ≤ 10 MB.', true);
-
-      document.getElementById('clientTs').value = new Date().toISOString();
-
-      try {
-        show('Initializing…');
-
-        // 1) INIT PROOF (server will refuse if Tag folder does NOT exist)
-        {
-          const fd = new FormData();
-          fd.append('action', 'initProof');
-          fd.append('tag', tag);
-          fd.append('clientTs', document.getElementById('clientTs').value);
-          const init = await fetchJSON(fd);
-          if (!init.ok) return show('❌ initProof failed: ' + (init.error || 'Unknown'), true);
-        }
-
-        // 2) Upload all files sequentially (Base64) with a "kind" label
-        const files = [
-          { kind: 'company',  file: company },
-          { kind: 'pred1',    file: preds[0] },
-          { kind: 'pred2',    file: preds[1] },
-          { kind: 'pred3',    file: preds[2] },
-          { kind: 'pred4',    file: preds[3] },
-          { kind: 'pred5',    file: preds[4] },
-          { kind: 'pred6',    file: preds[5] },
-          { kind: 'pred7',    file: preds[6] },
-          { kind: 'successor',file: succ }
-        ];
-
-        prog.style.display = 'block';
-        prog.value = 0;
-
-        for (let i = 0; i < files.length; i++) {
-          const { kind, file } = files[i];
-
-          // optional compression
-          const blob    = await compressImage(file, kind.startsWith('pred') ? 0.85 : 0.9, 1600);
-          const wrapped = new File([blob || file], safeName(file.name || (kind + '.jpg')), { type: (blob && blob.type) || file.type || 'image/jpeg' });
-
-          const up = await uploadAsBase64(kind, wrapped, tag, document.getElementById('clientTs').value);
-          if (!up.ok) return show(`❌ Upload failed for ${kind}: ` + (up.error || 'Unknown'), true);
-
-          show(`Uploaded ${kind} (${i + 1}/${files.length})${up.fileURL ? ' → ' + up.fileURL : ''}`);
-          prog.value = Math.round(((i + 1) / files.length) * 100);
-        }
-
-        show('✅ All proof images uploaded.', false, true);
-        form.reset();
-        prog.style.display = 'none';
-
-      } catch (err) {
-        show('❌ Network error: ' + err.message, true);
-      }
+  // ===== API CALLS (form-encoded) =====
+  async function post(params){
+    const body = new URLSearchParams(params);
+    const res = await fetch(API_BASE, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body });
+    return res.json();
+  }
+  async function initProof(tag){
+    return post({ action:'initProof', xrpTag:tag, clientTs:new Date().toISOString() });
+  }
+  async function uploadB64(tag, kind, dataUrl, origName){
+    // Back end: uploadProofB64 expects: action, xrpTag, kind, name, mimeType, data, clientTs
+    const mime = (dataUrl.match(/^data:(.*?);base64,/)||[])[1] || 'image/jpeg';
+    return post({
+      action:'uploadProofB64',
+      xrpTag:tag,
+      kind,
+      name:origName||(`${kind}.jpg`),
+      mimeType:mime,
+      data:dataUrl, // include data: prefix; server parses it
+      clientTs:new Date().toISOString()
     });
+  }
+  async function finalize(tag, delayKey){
+    return post({ action:'finalizeProof', xrpTag:tag, delay:delayKey, clientTs:new Date().toISOString() });
+  }
 
-    // ---- helpers ----
-    async function fetchJSON(formData, tries = 2) {
-      let lastErr, data;
-      for (let i = 0; i < tries; i++) {
-        try {
-          const res = await fetch(WEB_APP_URL, { method: 'POST', body: formData });
-          const txt = await res.text();
-          data = JSON.parse(txt);
-          return data;
-        } catch (e) {
-          lastErr = e;
-          await new Promise(r => setTimeout(r, 600));
-        }
-      }
-      return { ok:false, error:lastErr?.message || 'network error' };
-    }
+  // ===== EVENTS =====
+  // Tag prefill
+  (function(){
+    const t = qs.get('tag') || '';
+    if (t) $('#xrpTag').value = t;
+  })();
 
-    function show(text, isError=false, isSuccess=false) {
-      msg.style.display = 'block';
-      msg.className = (isError ? 'card error' : (isSuccess ? 'card success' : 'card'));
-      msg.textContent = text;
-    }
-    function safeName(name) { return (name || 'upload.jpg').replace(/[^\w\-.]+/g, '_'); }
+  // Kind selectors
+  document.querySelectorAll('.pill[data-kind]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.pill[data-kind]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentKind = btn.dataset.kind;
+      $('#kindNow').textContent = currentKind;
+    });
+  });
+  $('#addPred').addEventListener('click', ()=>{
+    currentKind = `pred${predIndex++}`;
+    $('#kindNow').textContent = currentKind;
+    document.querySelectorAll('.pill[data-kind]').forEach(b=>b.classList.remove('active'));
+  });
 
-    // Convert a File/Blob to data URL (works reliably across browsers)
-    function toDataURL(fileOrBlob) {
-      return new Promise((resolve, reject) => {
-        const fr = new FileReader();
-        fr.onerror = () => reject(new Error('FileReader error'));
-        fr.onload  = () => resolve(fr.result); // data:image/*;base64,XXXX
-        fr.readAsDataURL(fileOrBlob);
-      });
-    }
+  // Initialize folder
+  $('#init').addEventListener('click', async ()=>{
+    setMsg($('#msg'),'');
+    const tag = $('#xrpTag').value.trim();
+    if(!TAG_RE.test(tag)){ setMsg($('#msg'),'Tag must be 10 digits.'); return; }
+    try{
+      const r = await initProof(tag);
+      if(!r.ok){ setMsg($('#msg'), r.error || 'Failed to init'); return; }
+      setMsg($('#msg'), 'Ready.', true);
+      setFolderLink(r.folderURL);
+      setCounts(r.uploaded, r.remaining, r.locked);
+    }catch(e){ setMsg($('#msg'), 'Network error: '+e); }
+  });
 
-    async function uploadAsBase64(kind, file, tag, clientTs) {
-      const durl = await toDataURL(file);
-      const fd   = new FormData();
-      fd.append('action',   'uploadProofB64');
-      fd.append('tag',      tag);
-      fd.append('kind',     kind);
-      fd.append('name',     safeName(file.name || (kind + '.jpg')));
-      fd.append('mimeType', file.type || 'image/jpeg');
-      fd.append('data',     durl);
-      fd.append('clientTs', clientTs);
+  // Upload
+  $('#upload').addEventListener('click', async ()=>{
+    setMsg($('#msg'),'');
+    const tag = $('#xrpTag').value.trim();
+    if(!TAG_RE.test(tag)) return setMsg($('#msg'),'Tag must be 10 digits.');
+    const f = $('#file').files[0];
+    if(!f) return setMsg($('#msg'),'Choose an image first.');
 
-      const res = await fetch(WEB_APP_URL, { method:'POST', body: fd });
-      const txt = await res.text();
-      let json; try { json = JSON.parse(txt); } catch { return { ok:false, error:'Non-JSON: ' + txt.slice(0,120) }; }
-      return json;
-    }
+    try{
+      const dataUrl = await fileToDataUrl(f);
+      const res = await uploadB64(tag, currentKind, dataUrl, f.name);
+      if(!res.ok){ setMsg($('#msg'), res.error || 'Upload failed'); return; }
+      setMsg($('#msg'),'Uploaded.', true);
+      addListItem(res.fileName || f.name, res.size || f.size, 'ok', res.fileURL);
+      setCounts(res.uploaded, res.remaining, res.locked);
+      if(res.locked) $('#lockFlag').style.display='';
+      if(!$('#folderLink').innerHTML && res.folderURL) setFolderLink(res.folderURL);
+      $('#file').value = '';
+    }catch(e){ setMsg($('#msg'),'Error: '+e); }
+  });
 
-    async function compressImage(file, quality=0.9, maxWidth=1600) {
-      try {
-        if (!('createImageBitmap' in window)) return file;
-        const bmp = await createImageBitmap(file);
-        const scale = Math.min(1, maxWidth / bmp.width);
-        const canvas = document.createElement('canvas');
-        canvas.width  = Math.round(bmp.width  * scale);
-        canvas.height = Math.round(bmp.height * scale);
-        canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
-        const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
-        return blob || file;
-      } catch { return file; }
-    }
-  </script>
+  // Finalize
+  $('#finalize').addEventListener('click', async ()=>{
+    setMsg($('#finalMsg'),'');
+    const tag = $('#xrpTag').value.trim();
+    if(!TAG_RE.test(tag)) return setMsg($('#finalMsg'),'Tag must be 10 digits.');
+    try{
+      const res = await finalize(tag, $('#delay').value);
+      if(!res.ok){ setMsg($('#finalMsg'), res.error || 'Finalize failed'); return; }
+      setMsg($('#finalMsg'), `Queued for OCR (delay ${res.delayMinutes||'~'} min).`, true);
+    }catch(e){ setMsg($('#finalMsg'),'Error: '+e); }
+  });
+
+  // Auto-init if tag present
+  window.addEventListener('load', ()=>{
+    const tag = $('#xrpTag').value.trim();
+    if (TAG_RE.test(tag)) $('#init').click();
+  });
+</script>
 </body>
 </html>
