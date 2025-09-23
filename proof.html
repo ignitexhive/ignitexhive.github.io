@@ -1,114 +1,277 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>IXH – Upload Proofs</title>
-  <link rel="stylesheet" href="assets/styles.css">
-  <link rel="stylesheet" href="assets/manual.css">
+  <meta charset="utf-8">
+  <title>Submit Proof Â· IgniteX Hive</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./assets/styles.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-T96TDZ4N9E"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config','G-T96TDZ4N9E');</script>
+  <style>
+    .form-card{max-width:860px;margin:24px auto}
+    .grid-3{display:grid;gap:12px}
+    @media(min-width:900px){.grid-3{grid-template-columns:repeat(3,1fr)}}
+  </style>
 </head>
 <body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <img src="./assets/hero.png" class="logo" alt="IgniteX Hive">
+      <div class="brand">IgniteX Hive</div>
+      <div class="spacer"></div>
+      <a class="btn" href="./index.html">Guide</a>
+      <a class="btn" href="./manual/index.html">Manual</a>
+      <a class="btn" href="./signup.html">Sign-Up</a>
+      <a class="btn" href="./proof.html">Submit Proof</a>
+      <a class="btn" href="./index.html#contact" data-nav="Contact">Contact</a>
+    </div>
+  </nav>
+
   <main class="container">
-    <h1 class="title">Upload Payment Proofs</h1>
-
-    <div class="card">
-      <form id="proofForm" class="form" enctype="multipart/form-data">
-        <div class="grid">
-          <div class="field">
-            <label for="xrpTag">Your XRP Tag ID (10 digits)</label>
-            <input id="xrpTag" name="xrpTag" type="text" class="input" inputmode="numeric" pattern="^\d{10}$" required>
+    <div class="card form-card">
+      <h1>Submit Proof of Transactions</h1>
+      <p class="small">Attach 9 screenshots taken on the <strong>same phone</strong>, unedited.</p>
+      <div class="notice"><span class="label">Reminder:</span> Submit after your Luno account is verified and all transfers are complete.</div>
+      <form id="proofForm">
+        <div class="row">
+          <label for="companyWalletProof">IgniteX Hive XRP Wallet (Company)</label>
+          <input id="companyWalletProof" class="mono" value="rPqbs9C8r5L4g5dtTyn3UeWhXNywngri5j" readonly>
+          <div class="help">Use this address for the Gen 00 company transfer.</div>
+        </div>
+        <div class="row two">
+          <div>
+            <label for="wallet">Your XRP Wallet Address (New Joiner) *</label>
+            <input id="wallet" name="wallet" required pattern="r[1-9A-HJ-NP-Za-km-z]{24,33}" placeholder="r...">
+            <div class="help">Personal wallet address (starts with r, 25-35 chars).</div>
+            <label for="xrpTag">Your XRP Tag ID (10 digits) *</label>
+            <input id="xrpTag" name="xrpTag" required pattern="\d{10}" maxlength="10" inputmode="numeric" placeholder="##########">
+            <div class="help">Numeric, exactly 10 digits.</div>
           </div>
-          <div class="field">
-            <label for="succTag">Successor Tag ID (10 digits)</label>
-            <input id="succTag" name="succTag" type="text" class="input" inputmode="numeric" pattern="^\d{10}$" required>
+          <div>
+            <label for="succWallet">Successor XRP Wallet Address *</label>
+            <input id="succWallet" name="succWallet" required pattern="r[1-9A-HJ-NP-Za-km-z]{24,33}" placeholder="r...">
+            <div class="help">Successor wallet address (starts with r, 25-35 chars).</div>
+            <label for="succTag">Successor XRP Tag ID (10 digits) *</label>
+            <input id="succTag" name="succTag" required pattern="\d{10}" maxlength="10" inputmode="numeric" placeholder="##########">
+            <div class="help">Numeric, exactly 10 digits.</div>
           </div>
         </div>
 
-        <p class="muted">Upload up to 9 images (JPG/PNG). Company + predecessors + successor.</p>
-
-        <div class="field">
-          <label>Company Screenshot</label>
-          <input type="file" name="imgCompany" accept="image/png,image/jpeg" class="input">
+        <div class="row two">
+          <div>
+            <label for="email">Email Address *</label>
+            <input id="email" name="email" type="email" required placeholder="you@example.com">
+          </div>
+          <div>
+            <label for="txId">Provide Company Transaction ID *</label>
+            <input id="txId" name="txId" required placeholder="Hash">
+          </div>
         </div>
 
-        <div class="field">
-          <label>Predecessor Screenshots</label>
-          <input type="file" name="imgPred" accept="image/png,image/jpeg" multiple class="input">
+        <h2>Upload Screenshots</h2>
+        <div class="row">
+          <label>Ignite-X Hive (Company) â€” 1 image (â‰¤1MB) *</label>
+          <input id="imgCompany" name="imgCompany" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" required>
         </div>
 
-        <div class="field">
-          <label>Successor Screenshot</label>
-          <input type="file" name="imgSucc" accept="image/png,image/jpeg" class="input">
+        <div class="row">
+          <label>All 7 Predecessors â€” 7 images total (â‰¤10MB combined) *</label>
+          <input id="imgPred" name="imgPred" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" multiple required>
+          <div class="help">Exactly 7 images recommended.</div>
         </div>
 
-        <div class="actions">
-          <button type="submit" class="btn">Upload</button>
-          <button type="button" id="finalize" class="btn primary">Finalize & Queue OCR</button>
+        <div class="row">
+          <label>Successor â€” 1 image (â‰¤1MB) *</label>
+          <input id="imgSucc" name="imgSucc" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" required>
+        </div>
+
+        <input type="hidden" name="clientTs" id="clientTs">
+
+        <div class="row">
+          <button class="btn" type="submit">Submit</button>
+        </div>
+
+        <div class="row">
+          <progress id="prog" value="0" max="100" style="display:none;width:100%"></progress>
         </div>
       </form>
 
-      <div id="result" class="result" hidden></div>
+      <div id="msg" class="card" style="display:none;margin-top:14px;"></div>
     </div>
   </main>
 
-  <script>
-    (function(){
-      const BASE = new URL(window.location.href);
-      const APP_URL = BASE.origin + BASE.pathname.replace(/\/[^\/]*$/, '/exec');
+  <script src="./assets/wallet.js"></script>
 
-      const form = document.getElementById('proofForm');
-      const finalizeBtn = document.getElementById('finalize');
-      const result = document.getElementById('result');
+<script>
+    // ðŸ”´ Use the SAME working /exec URL you validated earlier
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzsTqs07SMLhZxtvPWg8VKqxTAdOi6Y1DXVK5owFZ-D2biIJUp07SOet0aMROaCc6nI/exec';
 
-      function show(msg, ok) {
-        result.hidden = false;
-        result.textContent = msg;
-        result.className = 'result ' + (ok ? 'ok' : 'err');
+    const form = document.getElementById('proofForm');
+    const msg  = document.getElementById('msg');
+    const prog = document.getElementById('prog');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const tag = (document.getElementById('xrpTag').value || '').trim();
+      if (!/^\d{10}$/.test(tag)) return show('âŒ XRP Tag ID must be exactly 10 digits.', true);
+
+      const company = document.getElementById('imgCompany').files[0];
+      const preds   = Array.from(document.getElementById('imgPred').files || []);
+      const succ    = document.getElementById('imgSucc').files[0];
+
+      if (!company || !succ || preds.length !== 7)
+        return show('âŒ Please attach Company (1), exactly 7 Predecessors, and Successor (1).', true);
+
+      // ---------- Strict client-side type checks ----------
+      const isOk = (f) => {
+        const t = (f.type || '').toLowerCase();
+        const ext = (f.name.split('.').pop() || '').toLowerCase();
+        const mimeOK = (t === 'image/jpeg' || t === 'image/jpg' || t === 'image/png' || t === '');
+        const extOK  = (ext === 'jpg' || ext === 'jpeg' || ext === 'png');
+        return mimeOK && extOK;
+      };
+      const bad = [company, ...preds, succ].find(f => !isOk(f));
+      if (bad) return show(`âŒ Unsupported file "${bad.name}". Only JPG/JPEG/PNG allowed.`, true);
+
+      // Size checks
+      if (company.size > 1 * 1024 * 1024)  return show('âŒ Company screenshot must be â‰¤ 1 MB.', true);
+      if (succ.size    > 1 * 1024 * 1024)  return show('âŒ Successor screenshot must be â‰¤ 1 MB.', true);
+      const totalPred = preds.reduce((n, f) => n + f.size, 0);
+      if (totalPred   > 10 * 1024 * 1024)  return show('âŒ Predecessors total must be â‰¤ 10 MB.', true);
+
+      document.getElementById('clientTs').value = new Date().toISOString();
+
+      try {
+        show('Initializingâ€¦');
+
+        // 1) INIT PROOF (server will refuse if Tag folder does NOT exist)
+        {
+          const fd = new FormData();
+          fd.append('action', 'initProof');
+          fd.append('tag', tag);
+          fd.append('clientTs', document.getElementById('clientTs').value);
+          const init = await fetchJSON(fd);
+          if (!init.ok) return show('âŒ initProof failed: ' + (init.error || 'Unknown'), true);
+        }
+
+        // 2) Upload all files sequentially (Base64) with a "kind" label
+        const files = [
+          { kind: 'company',  file: company },
+          { kind: 'pred1',    file: preds[0] },
+          { kind: 'pred2',    file: preds[1] },
+          { kind: 'pred3',    file: preds[2] },
+          { kind: 'pred4',    file: preds[3] },
+          { kind: 'pred5',    file: preds[4] },
+          { kind: 'pred6',    file: preds[5] },
+          { kind: 'pred7',    file: preds[6] },
+          { kind: 'successor',file: succ }
+        ];
+
+        prog.style.display = 'block';
+        prog.value = 0;
+
+        for (let i = 0; i < files.length; i++) {
+          const { kind, file } = files[i];
+
+          // optional compression
+          const blob    = await compressImage(file, kind.startsWith('pred') ? 0.85 : 0.9, 1600);
+          const wrapped = new File([blob || file], safeName(file.name || (kind + '.jpg')), { type: (blob && blob.type) || file.type || 'image/jpeg' });
+
+          const up = await uploadAsBase64(kind, wrapped, tag, document.getElementById('clientTs').value);
+          if (!up.ok) return show(`âŒ Upload failed for ${kind}: ` + (up.error || 'Unknown'), true);
+
+          show(`Uploaded ${kind} (${i + 1}/${files.length})${up.fileURL ? ' â†’ ' + up.fileURL : ''}`);
+          prog.value = Math.round(((i + 1) / files.length) * 100);
+        }
+
+        show('âœ… All proof images uploaded.', false, true);
+        form.reset();
+        prog.style.display = 'none';
+
+      } catch (err) {
+        show('âŒ Network error: ' + err.message, true);
       }
+    });
 
-      form.addEventListener('submit', async (ev) => {
-        ev.preventDefault();
-        const tag = form.xrpTag.value.trim();
-        const succ = form.succTag.value.trim();
-        if (!/^\d{10}$/.test(tag)) { show('XRP Tag ID must be 10 digits.', false); return; }
-        if (!/^\d{10}$/.test(succ)) { show('Successor Tag ID must be 10 digits.', false); return; }
-
-        const fd = new FormData(form);
-        fd.append('action', 'proof');
-
+    // ---- helpers ----
+    async function fetchJSON(formData, tries = 2) {
+      let lastErr, data;
+      for (let i = 0; i < tries; i++) {
         try {
-          const r = await fetch(APP_URL, { method: 'POST', body: fd });
-          const j = await r.json();
-          if (j.ok) {
-            show('Uploaded. Folder: ' + j.folderURL + ' (' + (j.files||[]).length + ' files)', true);
-          } else {
-            show('Error: ' + (j.error || 'Unknown'), false);
-          }
+          const res = await fetch(WEB_APP_URL, { method: 'POST', body: formData });
+          const txt = await res.text();
+          data = JSON.parse(txt);
+          return data;
         } catch (e) {
-          show('Network error: ' + e, false);
+          lastErr = e;
+          await new Promise(r => setTimeout(r, 600));
         }
-      });
+      }
+      return { ok:false, error:lastErr?.message || 'network error' };
+    }
 
-      finalizeBtn.addEventListener('click', async () => {
-        const tag = form.xrpTag.value.trim();
-        if (!/^\d{10}$/.test(tag)) { show('XRP Tag ID must be 10 digits.', false); return; }
-        const payload = new URLSearchParams();
-        payload.set('action','finalizeProof');
-        payload.set('xrpTag', tag);
-        payload.set('force', 'true'); // let backend enforce counts/locks; adjust if you want strict 9
-        try {
-          const r = await fetch(APP_URL, { method:'POST', body: payload });
-          const j = await r.json();
-          if (j.ok) {
-            show('Queued for OCR. Folder: ' + (j.folderURL || ''), true);
-          } else {
-            show('Error: ' + (j.error || 'Unknown'), false);
-          }
-        } catch (e) {
-          show('Network error: ' + e, false);
-        }
+    function show(text, isError=false, isSuccess=false) {
+      msg.style.display = 'block';
+      msg.className = (isError ? 'card error' : (isSuccess ? 'card success' : 'card'));
+      msg.textContent = text;
+    }
+    function safeName(name) { return (name || 'upload.jpg').replace(/[^\w\-.]+/g, '_'); }
+
+    // Convert a File/Blob to data URL (works reliably across browsers)
+    function toDataURL(fileOrBlob) {
+      return new Promise((resolve, reject) => {
+        const fr = new FileReader();
+        fr.onerror = () => reject(new Error('FileReader error'));
+        fr.onload  = () => resolve(fr.result); // data:image/*;base64,XXXX
+        fr.readAsDataURL(fileOrBlob);
       });
-    })();
+    }
+
+    async function uploadAsBase64(kind, file, tag, clientTs) {
+      const durl = await toDataURL(file);
+      const fd   = new FormData();
+      fd.append('action',   'uploadProofB64');
+      fd.append('tag',      tag);
+      fd.append('kind',     kind);
+      fd.append('name',     safeName(file.name || (kind + '.jpg')));
+      fd.append('mimeType', file.type || 'image/jpeg');
+      fd.append('data',     durl);
+      fd.append('clientTs', clientTs);
+
+      const res = await fetch(WEB_APP_URL, { method:'POST', body: fd });
+      const txt = await res.text();
+      let json; try { json = JSON.parse(txt); } catch { return { ok:false, error:'Non-JSON: ' + txt.slice(0,120) }; }
+      return json;
+    }
+
+    async function compressImage(file, quality=0.9, maxWidth=1600) {
+      try {
+        if (!('createImageBitmap' in window)) return file;
+        const bmp = await createImageBitmap(file);
+        const scale = Math.min(1, maxWidth / bmp.width);
+        const canvas = document.createElement('canvas');
+        canvas.width  = Math.round(bmp.width  * scale);
+        canvas.height = Math.round(bmp.height * scale);
+        canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
+        const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
+        return blob || file;
+      } catch { return file; }
+    }
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

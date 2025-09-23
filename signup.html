@@ -1,135 +1,148 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>IXH – Sign Up</title>
-  <link rel="stylesheet" href="assets/styles.css">
-  <link rel="stylesheet" href="assets/manual.css">
+  <meta charset="utf-8">
+  <title>Sign‑Up · IgniteX Hive</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./assets/styles.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-T96TDZ4N9E"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config','G-T96TDZ4N9E');</script>
+  <style>
+    .form-card{max-width:760px;margin:24px auto}
+  </style>
 </head>
 <body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <img src="./assets/hero.png" class="logo" alt="IgniteX Hive">
+      <div class="brand">IgniteX Hive</div>
+      <div class="spacer"></div>
+      <a class="btn" href="./index.html">Guide</a>
+      <a class="btn" href="./manual/index.html">Manual</a>
+      <a class="btn" href="./signup.html">Sign‑Up</a>
+      <a class="btn" href="./proof.html">Submit Proof</a>
+      <a class="btn" href="./index.html#contact" data-nav="Contact">Contact</a>
+      <!--  <div class="theme"><button id="themeToggle" class="btn" aria-label="Toggle theme">Light Mode</button></div> -->
+    </div>
+  </nav>
+
   <main class="container">
-    <h1 class="title">Sign Up</h1>
+    <div class="card form-card">
+      <h1>Ignite‑X Larvae Sign‑Up Form</h1>
+      <p class="small">Fields marked * are required.</p>
 
-    <div class="card">
-      <p class="muted">Note: All fields are required.</p>
-      <form id="signupForm" class="form">
-        <div class="field">
-          <label for="name">Full Name</label>
-          <input id="name" name="name" type="text" class="input" required>
-        </div>
+      <form id="signupForm">
 
-        <div class="field">
-          <label for="address">Mailing Address</label>
-          <textarea id="address" name="address" class="input" rows="3" required></textarea>
-        </div>
-
-        <div class="field">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" class="input" required>
-        </div>
-
-        <!-- NEW: Wallet -->
-        <div class="field">
-          <label for="wallet">XRP Wallet Address (classic)</label>
-          <input id="wallet" name="wallet" type="text" class="input"
-                 placeholder="rPqbs9C8r5L4g5dtTyn3UeWhXNywngri5j"
-                 pattern="^r[1-9A-HJ-NP-Za-km-z]{24,34}$" required>
-          <small class="hint">Must start with <b>r</b> and be 25–35 base58 characters (no 0,O,I,l).</small>
-        </div>
-
-        <div class="field">
-          <label for="nationality">Nationality</label>
-          <input id="nationality" name="nationality" type="text" class="input" required>
-        </div>
-
-        <div class="grid">
-          <div class="field">
-            <label for="xrpTag">Your XRP Tag ID (10 digits)</label>
-            <input id="xrpTag" name="xrpTag" type="text" class="input" inputmode="numeric" pattern="^\d{10}$" required>
+        <div class="row two">
+          <div>
+            <label for="name">Name *</label>
+            <input id="name" name="name" required>
           </div>
-          <div class="field">
-            <label for="succTag">Successor Tag ID (10 digits)</label>
-            <input id="succTag" name="succTag" type="text" class="input" inputmode="numeric" pattern="^\d{10}$" required>
+          <div>
+            <label for="email">Email Address *</label>
+            <input id="email" name="email" type="email" required placeholder="you@example.com">
           </div>
         </div>
 
-        <div class="field">
-          <label for="telegram">Telegram Username</label>
-          <input id="telegram" name="telegram" type="text" class="input" placeholder="@username" required>
+        <div class="row">
+          <div>
+            <label for="address">Mailing Address *</label>
+            <textarea id="address" name="address" required placeholder="Street, City, State, Postcode, Country"></textarea>
+          </div>
         </div>
 
-        <div class="actions">
-          <button type="submit" class="btn primary">Submit</button>
+        <div class="row two">
+          <div>
+            <label for="nationality">Nationality *</label>
+            <select id="nationality" name="nationality" required>
+              <option value="" disabled selected>Select</option>
+              <option>Malaysian</option>
+              <option>Non-Malaysian</option>
+            </select>
+          </div>
+          <div>
+            <label for="telegram">Telegram Username *</label>
+            <input id="telegram" name="telegram" required placeholder="@username">
+          </div>
+        </div>
+
+        <div class="row two">
+          <div>
+            <label for="wallet">Your XRP Wallet Address (New Joiner) *</label>
+            <input id="wallet" name="wallet" required placeholder="r..." pattern="r[1-9A-HJ-NP-Za-km-z]{24,33}">
+            <div class="help">Personal XRP wallet address (starts with r, 25-35 chars).</div>
+            <label for="xrpTag">Your XRP Tag ID (10 digits) *</label>
+            <input id="xrpTag" name="xrpTag" required pattern="\d{10}" maxlength="10" inputmode="numeric" placeholder="##########">
+            <div class="help">Numeric, exactly 10 digits.</div>
+          </div>
+          <div>
+            <label for="succWallet">Successor XRP Wallet Address *</label>
+            <input id="succWallet" name="succWallet" required placeholder="r..." pattern="r[1-9A-HJ-NP-Za-km-z]{24,33}">
+            <div class="help">Successor wallet address (starts with r, 25-35 chars).</div>
+            <label for="succTag">Successor XRP Tag ID (10 digits) *</label>
+            <input id="succTag" name="succTag" required pattern="\d{10}" maxlength="10" inputmode="numeric" placeholder="##########">
+            <div class="help">Numeric, exactly 10 digits.</div>
+          </div>
+        </div>
+
+        <input type="hidden" name="clientTs" id="clientTs">
+
+        <div class="row">
+          <button class="btn" type="submit">Submit</button>
         </div>
       </form>
 
-      <div id="result" class="result" hidden></div>
+      <div id="msg" class="card" style="display:none;margin-top:14px;"></div>
+      <hr>
+      <p class="small">After your account is verified (may take up to 24 hours), please proceed to <a href="./proof.html">Submit Proof</a>.</p>
     </div>
   </main>
 
   <script>
-    (function(){
-      const BASE = new URL(window.location.href);
-      // If you published your Apps Script as a Web App, replace with that URL:
-      const APP_URL = BASE.origin + BASE.pathname.replace(/\/[^\/]*$/, '/exec'); // same folder → /exec
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSk2SoBcYyS0Su-4CJkhPycpc6EfAPBTDVbXinkH-3hsvAiEnaAnTwOv3BDdL2yJt_/exec'; // replace with your Apps Script Web App URL
 
-      const form = document.getElementById('signupForm');
-      const result = document.getElementById('result');
+    const form = document.getElementById('signupForm');
+    const msg  = document.getElementById('msg');
 
-      function show(msg, ok) {
-        result.hidden = false;
-        result.textContent = msg;
-        result.className = 'result ' + (ok ? 'ok' : 'err');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      document.getElementById('clientTs').value = new Date().toISOString();
+
+      const fd = new FormData(form);
+      fd.append('action','signup');              // ← add this line
+
+      show('Submitting… please wait.');
+      try {
+        const res = await fetch(WEB_APP_URL, { method: 'POST', body: fd });
+        const data = await res.json();
+        if (data.ok) {
+          show('✅ Sign-up received. Check your email for next steps.', false, true);
+          form.reset();
+        } else {
+          show('❌ Error: ' + (data.error || 'Unknown error'), true);
+        }
+      } catch (err) {
+        show('❌ Network error: ' + err.message, true);
       }
+    });
 
-      form.addEventListener('submit', async (ev) => {
-        ev.preventDefault();
-
-        const name = form.name.value.trim();
-        const address = form.address.value.trim();
-        const email = form.email.value.trim();
-        const wallet = form.wallet.value.trim();
-        const nationality = form.nationality.value.trim();
-        const xrpTag = form.xrpTag.value.trim();
-        const succTag = form.succTag.value.trim();
-        const telegram = form.telegram.value.trim();
-
-        const reWallet = /^r[1-9A-HJ-NP-Za-km-z]{24,34}$/;
-        if (!reWallet.test(wallet)) {
-          show('Invalid XRP wallet address (must be classic r-address).', false);
-          form.wallet.focus();
-          return;
-        }
-        if (!/^\d{10}$/.test(xrpTag)) { show('XRP Tag ID must be 10 digits.', false); form.xrpTag.focus(); return; }
-        if (!/^\d{10}$/.test(succTag)) { show('Successor Tag ID must be 10 digits.', false); form.succTag.focus(); return; }
-
-        const payload = new URLSearchParams();
-        payload.set('action', 'signup');
-        payload.set('name', name);
-        payload.set('address', address);
-        payload.set('email', email);
-        payload.set('wallet', wallet); // NEW
-        payload.set('nationality', nationality);
-        payload.set('xrpTag', xrpTag);
-        payload.set('succTag', succTag);
-        payload.set('telegram', telegram);
-        payload.set('clientTs', new Date().toISOString());
-
-        try {
-          const r = await fetch(APP_URL, { method:'POST', body: payload });
-          const j = await r.json();
-          if (j.ok) {
-            show('Sign-up saved. Your folder: ' + j.folderURL, true);
-            form.reset();
-          } else {
-            show('Error: ' + (j.error || 'Unknown'), false);
-          }
-        } catch (e) {
-          show('Network error: ' + e, false);
-        }
-      });
-    })();
+    function show(text, isError=false, isSuccess=false) {
+      msg.style.display = 'block';
+      msg.className = 'card ' + (isError ? 'error' : (isSuccess ? 'success' : ''));
+      msg.textContent = text;
+    }
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
