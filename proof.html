@@ -1,4 +1,4 @@
-﻿<!doctype html>
+﻿octype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -195,31 +195,20 @@
     });
 
     // ---- helpers ----
-    async function fetchJSON(formData, tries = 2) {
-      let lastErr;
+        async function fetchJSON(formData, tries = 2) {
+      let lastErr, data;
       for (let i = 0; i < tries; i++) {
         try {
-          const res = await fetch(WEB_APP_URL, {
-            method: "POST",
-            body: formData,
-            mode: "cors",
-            credentials: "omit",
-          });
-          const raw = await res.text();
-          if (!res.ok) {
-            throw new Error(`HTTP ${res.status} ${res.statusText}${raw ? ": " + raw : ""}`);
-          }
-          try {
-            return raw ? JSON.parse(raw) : {};
-          } catch (parseErr) {
-            throw new Error("Invalid response from server" + (raw ? ": " + raw : ""));
-          }
+          const res = await fetch(WEB_APP_URL, { method: 'POST', body: formData });
+          const txt = await res.text();
+          data = JSON.parse(txt);
+          return data;
         } catch (e) {
           lastErr = e;
           await new Promise(r => setTimeout(r, 600));
         }
       }
-      return { ok:false, error: lastErr && lastErr.message ? lastErr.message : "network error" };
+      return { ok:false, error:lastErr?.message || "network error" };
     }
 
     function show(text, isError=false, isSuccess=false) {
@@ -250,26 +239,11 @@
       fd.append('data',     durl);
       fd.append('clientTs', clientTs);
 
-      const res = await fetch(WEB_APP_URL, {
-        method: "POST",
-        body: fd,
-        mode: "cors",
-        credentials: "omit",
-      });
-      const raw = await res.text();
-      if (!res.ok) {
-        return { ok:false, error: `HTTP ${res.status} ${res.statusText}${raw ? ": " + raw : ""}` };
-      }
-      let json;
-      try {
-        json = raw ? JSON.parse(raw) : {};
-      } catch {
-        return { ok:false, error: "Non-JSON: " + raw.slice(0, 200) };
-      }
+      const res = await fetch(WEB_APP_URL, { method:'POST', body: fd });
+      const txt = await res.text();
+      let json; try { json = JSON.parse(txt); } catch { return { ok:false, error:'Non-JSON: ' + txt.slice(0,120) }; }
       return json;
-    }
-
-    async function compressImage(file, quality=0.9, maxWidth=1600) {
+    }    async function compressImage(file, quality=0.9, maxWidth=1600) {
       try {
         if (!('createImageBitmap' in window)) return file;
         const bmp = await createImageBitmap(file);
@@ -285,3 +259,28 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

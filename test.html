@@ -2,64 +2,230 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>IgniteX Hive · GAS Web App Test</title>
-  <style>body{font-family:system-ui,Segoe UI,Roboto,sans-serif;max-width:760px;margin:40px auto;padding:0 16px}pre{background:#111;color:#eee;padding:12px;border-radius:8px;overflow:auto}</style>
+  <title>IgniteX Hive � GAS Web App Tester</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg:#f7f7fb;
+      --card:#ffffff;
+      --border:#d8d8e2;
+      --text:#1a1a1f;
+    }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0 auto;
+      max-width: 860px;
+      padding: 32px 20px 60px;
+      line-height: 1.4;
+    }
+    h1 { margin-top: 0; }
+    fieldset {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px 24px;
+      background: var(--card);
+      margin-bottom: 24px;
+    }
+    legend { font-weight: 600; padding: 0 8px; }
+    label { display:block; font-weight:600; margin-top:12px; }
+    input, textarea {
+      width: 100%;
+      padding: 9px 11px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font: inherit;
+      margin-top: 6px;
+      box-sizing: border-box;
+    }
+    input:focus, textarea:focus { outline: 2px solid #3b82f6; }
+    .row {
+      display: grid;
+      gap: 16px;
+    }
+    @media (min-width:720px) {
+      .row.two { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .row.three { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    }
+    button {
+      appearance: none;
+      border: none;
+      border-radius: 999px;
+      background: #2563eb;
+      color: #fff;
+      font: inherit;
+      font-weight: 600;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background .18s ease;
+      margin-right: 12px;
+    }
+    button:hover { background: #1d4ed8; }
+    button.secondary { background: #6b7280; }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #111827;
+      color: #f9fafb;
+      padding: 16px 18px;
+      border-radius: 12px;
+      min-height: 160px;
+      overflow-x: auto;
+    }
+    .btn-row { margin: 16px 0 24px; }
+  </style>
 </head>
 <body>
-  <h1>GAS Web App Test</h1>
-  <p>
-    <label>Web App URL:</label><br/>
-    <input id="url" style="width:100%" value="https://script.google.com/macros/s/AKfycby9G3xhDZoHrITRP8mFurBbNST_z0a7B1bWlEiCH_dM5cT8a27vko_zj-AFtNW2yItb/exec">
-  </p>
-  <p>
+  <h1>IgniteX Hive Google Apps Script Tester</h1>
+  <p>This page mirrors the <code>signup.html</code> payload. Update the fields below and click <strong>POST signup</strong> to make sure the production Web App accepts your data.</p>
+
+  <fieldset>
+    <legend>Web App Endpoint</legend>
+    <label for="url">Deployed /exec URL</label>
+    <input id="url" value="https://script.google.com/macros/s/AKfycby9G3xhDZoHrITRP8mFurBbNST_z0a7B1bWlEiCH_dM5cT8a27vko_zj-AFtNW2yItb/exec" />
+  </fieldset>
+
+  <fieldset>
+    <legend>Signup Payload</legend>
+    <div class="row two">
+      <div>
+        <label for="name">Name *</label>
+        <input id="name" value="Test User" />
+      </div>
+      <div>
+        <label for="email">Email *</label>
+        <input id="email" type="email" value="test@example.com" />
+      </div>
+    </div>
+
+    <label for="address">Mailing Address *</label>
+    <textarea id="address" rows="3">123 Sample Street, Kuala Lumpur, MY</textarea>
+
+    <div class="row three">
+      <div>
+        <label for="nationality">Nationality *</label>
+        <input id="nationality" value="Malaysian" />
+      </div>
+      <div>
+        <label for="telegram">Telegram *</label>
+        <input id="telegram" value="@testuser" />
+      </div>
+      <div>
+        <label for="clientTs">Client Timestamp</label>
+        <input id="clientTs" placeholder="autofilled on submit" />
+      </div>
+    </div>
+
+    <div class="row two">
+      <div>
+        <label for="wallet">Joiner Wallet *</label>
+        <input id="wallet" value="rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh" />
+      </div>
+      <div>
+        <label for="succWallet">Successor Wallet *</label>
+        <input id="succWallet" value="rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe" />
+      </div>
+    </div>
+
+    <div class="row two">
+      <div>
+        <label for="xrpTag">Joiner Tag (10 digits) *</label>
+        <input id="xrpTag" value="1234567890" />
+      </div>
+      <div>
+        <label for="succTag">Successor Tag (10 digits) *</label>
+        <input id="succTag" value="0987654321" />
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="btn-row">
     <button id="btnGet">GET ping</button>
     <button id="btnPost">POST signup</button>
-  </p>
-  <pre id="out">Ready…</pre>
+    <button id="btnReset" class="secondary">Reset Fields</button>
+  </div>
+
+  <pre id="out">Ready. Update any fields and run a test.</pre>
 
 <script>
 const $ = id => document.getElementById(id);
-function show(x){ $('out').textContent = x; }
+const OUTPUT = $('out');
+const DEFAULTS = {
+  name: 'Test User',
+  address: '123 Sample Street, Kuala Lumpur, MY',
+  email: 'test@example.com',
+  nationality: 'Malaysian',
+  telegram: '@testuser',
+  wallet: 'rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh',
+  succWallet: 'rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe',
+  xrpTag: '1234567890',
+  succTag: '0987654321',
+};
+
+function log(text) {
+  OUTPUT.textContent = text;
+}
+
+function resetFields() {
+  Object.entries(DEFAULTS).forEach(([key, val]) => {
+    if ($(key)) $(key).value = val;
+  });
+  if ($('clientTs')) $('clientTs').value = '';
+  log('Fields reset to defaults.');
+}
+
+$('btnReset').addEventListener('click', () => {
+  resetFields();
+});
 
 $('btnGet').addEventListener('click', async () => {
-  const u = $('url').value.trim();
-  show('GET ' + u + ' …');
+  const url = $('url').value.trim();
+  log('GET ' + url + ' �');
   try {
-    const res = await fetch(u, { method: 'GET' });
+    const res = await fetch(url, { method: 'GET' });
     const txt = await res.text();
-    show('Status: ' + res.status + '\n\n' + txt);
-  } catch (e) {
-    show('GET failed: ' + e.message);
+    log('Status: ' + res.status + '\n\n' + txt);
+  } catch (err) {
+    log('GET failed: ' + err.message);
   }
 });
 
 $('btnPost').addEventListener('click', async () => {
-  const u = $('url').value.trim();
-  show('POST ' + u + ' …');
+  const url = $('url').value.trim();
+  log('POST ' + url + ' �');
   try {
     const fd = new FormData();
-    fd.append('action','signup');
-    fd.append('name','Test User');
-    fd.append('address','123 Sample Street, KL');
-    fd.append('email','test@example.com');
-    fd.append('nationality','Malaysian');
-    fd.append('xrpTag','1234567890');  // 10 digits
-    fd.append('succTag','0987654321'); // 10 digits
-    fd.append('telegram','@testuser');
-    fd.append('clientTs', new Date().toISOString());
+    fd.append('action', 'signup');
 
-    const res = await fetch(u, { method: 'POST', body: fd });
-    const txt = await res.text(); // read text first (in case of non-JSON errors)
+    const fields = ['name','address','email','nationality','wallet','succWallet','xrpTag','succTag','telegram'];
+    fields.forEach((id) => {
+      const input = $(id);
+      if (input) {
+        fd.append(id, (input.value || '').trim());
+      }
+    });
+
+    const tsInput = $('clientTs');
+    const stamp = new Date().toISOString();
+    fd.append('clientTs', stamp);
+    if (tsInput) tsInput.value = stamp;
+
+    const res = await fetch(url, { method: 'POST', body: fd });
+    const txt = await res.text();
     try {
       const json = JSON.parse(txt);
-      show('Status: ' + res.status + '\n\n' + JSON.stringify(json, null, 2));
+      log('Status: ' + res.status + '\n\n' + JSON.stringify(json, null, 2));
     } catch {
-      show('Status: ' + res.status + '\n\n' + txt);
+      log('Status: ' + res.status + '\n\n' + txt);
     }
-  } catch (e) {
-    show('POST failed: ' + e.message);
+  } catch (err) {
+    log('POST failed: ' + err.message);
   }
 });
+
+// initialise defaults on load
+resetFields();
 </script>
 </body>
 </html>

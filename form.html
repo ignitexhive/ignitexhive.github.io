@@ -108,32 +108,18 @@
       document.getElementById('clientTs').value = new Date().toISOString();
 
       const fd = new FormData(form);
-      show("Submitting, please wait...");
+      show('Submitting, please wait...');
       try {
-        const res = await fetch(WEB_APP_URL, {
-          method: "POST",
-          body: fd,
-          mode: "cors",
-          credentials: "omit",
-        });
-        const raw = await res.text();
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status} ${res.statusText}${raw ? ": " + raw : ""}`);
-        }
-        let data;
-        try {
-          data = raw ? JSON.parse(raw) : {};
-        } catch (parseErr) {
-          throw new Error("Invalid response from server" + (raw ? ": " + raw : ""));
-        }
+        const res = await fetch(WEB_APP_URL, { method: 'POST', body: fd });
+        const data = await res.json();
         if (data.ok) {
-          show("Submission received. Thank you!", false, true);
+          show('Submission received. Thank you!', false, true);
           form.reset();
         } else {
-          show("Error: " + (data.error || "Unknown error"), true);
+          show('Error: ' + (data.error || 'Unknown error'), true);
         }
       } catch (err) {
-        show("Network error: " + (err && err.message ? err.message : err), true);
+        show('Network error: ' + err.message, true);
       }
     });
 
@@ -145,5 +131,7 @@
   </script>
 </body>
 </html>
+
+
 
 
