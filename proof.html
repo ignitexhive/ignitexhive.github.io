@@ -1,8 +1,8 @@
-﻿<!doctype html>
+﻿octype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Submit Proof Â· IgniteX Hive</title>
+    <title>Submit Proof - IgniteX Hive</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="./assets/styles.css">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-T96TDZ4N9E"></script>
@@ -35,7 +35,7 @@
       <form id="proofForm">
         <div class="row">
           <label for="companyWalletProof">IgniteX Hive XRP Wallet (Company)</label>
-          <input id="companyWalletProof" class="mono" value="rPqbs9C8r5L4g5dtTyn3UeWhXNywngri5j" readonly>
+          <input id="companyWalletProof" class="mono" data-company-wallet readonly>
           <div class="help">Use this address for the Gen 00 company transfer.</div>
         </div>
         <div class="row two">
@@ -70,18 +70,18 @@
 
         <h2>Upload Screenshots</h2>
         <div class="row">
-          <label>Ignite-X Hive (Company) â€” 1 image (â‰¤1MB) *</label>
+          <label>Ignite-X Hive (Company) - 1 image (<= 1MB) *</label>
           <input id="imgCompany" name="imgCompany" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" required>
         </div>
 
         <div class="row">
-          <label>All 7 Predecessors â€” 7 images total (â‰¤10MB combined) *</label>
+          <label>All 7 Predecessors - 7 images total (<= 10MB combined) *</label>
           <input id="imgPred" name="imgPred" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" multiple required>
           <div class="help">Exactly 7 images recommended.</div>
         </div>
 
         <div class="row">
-          <label>Successor â€” 1 image (â‰¤1MB) *</label>
+          <label>Successor - 1 image (<= 1MB) *</label>
           <input id="imgSucc" name="imgSucc" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" required>
         </div>
 
@@ -103,8 +103,8 @@
   <script src="./assets/wallet.js"></script>
 
 <script>
-    // ðŸ”´ Use the SAME working /exec URL you validated earlier
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzsTqs07SMLhZxtvPWg8VKqxTAdOi6Y1DXVK5owFZ-D2biIJUp07SOet0aMROaCc6nI/exec';
+    // Use the SAME working /exec URL you validated earlier
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwrxMZmJxMX-pt-0zbqZpfp5Q8DaZ66NDU9oWIUSmI_4H-QvQX0R6KkJT6bmEecVhng/exec';
 
     const form = document.getElementById('proofForm');
     const msg  = document.getElementById('msg');
@@ -114,14 +114,14 @@
       e.preventDefault();
 
       const tag = (document.getElementById('xrpTag').value || '').trim();
-      if (!/^\d{10}$/.test(tag)) return show('âŒ XRP Tag ID must be exactly 10 digits.', true);
+      if (!/^\d{10}$/.test(tag)) return show('Error: XRP Tag ID must be exactly 10 digits.', true);
 
       const company = document.getElementById('imgCompany').files[0];
       const preds   = Array.from(document.getElementById('imgPred').files || []);
       const succ    = document.getElementById('imgSucc').files[0];
 
       if (!company || !succ || preds.length !== 7)
-        return show('âŒ Please attach Company (1), exactly 7 Predecessors, and Successor (1).', true);
+        return show('Error: Please attach Company (1), exactly 7 Predecessors, and Successor (1).', true);
 
       // ---------- Strict client-side type checks ----------
       const isOk = (f) => {
@@ -132,18 +132,18 @@
         return mimeOK && extOK;
       };
       const bad = [company, ...preds, succ].find(f => !isOk(f));
-      if (bad) return show(`âŒ Unsupported file "${bad.name}". Only JPG/JPEG/PNG allowed.`, true);
+      if (bad) return show(`Error: Unsupported file "${bad.name}". Only JPG/JPEG/PNG allowed.`, true);
 
       // Size checks
-      if (company.size > 1 * 1024 * 1024)  return show('âŒ Company screenshot must be â‰¤ 1 MB.', true);
-      if (succ.size    > 1 * 1024 * 1024)  return show('âŒ Successor screenshot must be â‰¤ 1 MB.', true);
+      if (company.size > 1 * 1024 * 1024)  return show('Company screenshot must be 1 MB.', true);
+      if (succ.size    > 1 * 1024 * 1024)  return show('Successor screenshot must be 1 MB.', true);
       const totalPred = preds.reduce((n, f) => n + f.size, 0);
-      if (totalPred   > 10 * 1024 * 1024)  return show('âŒ Predecessors total must be â‰¤ 10 MB.', true);
+      if (totalPred   > 10 * 1024 * 1024)  return show('Predecessors total must be 10 MB.', true);
 
       document.getElementById('clientTs').value = new Date().toISOString();
 
       try {
-        show('Initializingâ€¦');
+        show('Initializing...');
 
         // 1) INIT PROOF (server will refuse if Tag folder does NOT exist)
         {
@@ -152,7 +152,7 @@
           fd.append('tag', tag);
           fd.append('clientTs', document.getElementById('clientTs').value);
           const init = await fetchJSON(fd);
-          if (!init.ok) return show('âŒ initProof failed: ' + (init.error || 'Unknown'), true);
+          if (!init.ok) return show('Error: initProof failed: ' + (init.error || 'Unknown'), true);
         }
 
         // 2) Upload all files sequentially (Base64) with a "kind" label
@@ -179,36 +179,47 @@
           const wrapped = new File([blob || file], safeName(file.name || (kind + '.jpg')), { type: (blob && blob.type) || file.type || 'image/jpeg' });
 
           const up = await uploadAsBase64(kind, wrapped, tag, document.getElementById('clientTs').value);
-          if (!up.ok) return show(`âŒ Upload failed for ${kind}: ` + (up.error || 'Unknown'), true);
+          if (!up.ok) return show(`Error: Upload failed for ${kind}: ${up.error || 'Unknown'}`, true);
 
-          show(`Uploaded ${kind} (${i + 1}/${files.length})${up.fileURL ? ' â†’ ' + up.fileURL : ''}`);
+          show(`Uploaded ${kind} (${i + 1}/${files.length})${up.fileURL ? ' ' + up.fileURL : ''}`);
           prog.value = Math.round(((i + 1) / files.length) * 100);
         }
 
-        show('âœ… All proof images uploaded.', false, true);
+        show('All proof images uploaded.', false, true);
         form.reset();
         prog.style.display = 'none';
 
       } catch (err) {
-        show('âŒ Network error: ' + err.message, true);
+        show('Network error: ' + err.message, true);
       }
     });
 
     // ---- helpers ----
     async function fetchJSON(formData, tries = 2) {
-      let lastErr, data;
+      let lastErr;
       for (let i = 0; i < tries; i++) {
         try {
-          const res = await fetch(WEB_APP_URL, { method: 'POST', body: formData });
-          const txt = await res.text();
-          data = JSON.parse(txt);
-          return data;
+          const res = await fetch(WEB_APP_URL, {
+            method: "POST",
+            body: formData,
+            mode: "cors",
+            credentials: "omit",
+          });
+          const raw = await res.text();
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status} ${res.statusText}${raw ? ": " + raw : ""}`);
+          }
+          try {
+            return raw ? JSON.parse(raw) : {};
+          } catch (parseErr) {
+            throw new Error("Invalid response from server" + (raw ? ": " + raw : ""));
+          }
         } catch (e) {
           lastErr = e;
           await new Promise(r => setTimeout(r, 600));
         }
       }
-      return { ok:false, error:lastErr?.message || 'network error' };
+      return { ok:false, error: lastErr && lastErr.message ? lastErr.message : "network error" };
     }
 
     function show(text, isError=false, isSuccess=false) {
@@ -239,9 +250,22 @@
       fd.append('data',     durl);
       fd.append('clientTs', clientTs);
 
-      const res = await fetch(WEB_APP_URL, { method:'POST', body: fd });
-      const txt = await res.text();
-      let json; try { json = JSON.parse(txt); } catch { return { ok:false, error:'Non-JSON: ' + txt.slice(0,120) }; }
+      const res = await fetch(WEB_APP_URL, {
+        method: "POST",
+        body: fd,
+        mode: "cors",
+        credentials: "omit",
+      });
+      const raw = await res.text();
+      if (!res.ok) {
+        return { ok:false, error: `HTTP ${res.status} ${res.statusText}${raw ? ": " + raw : ""}` };
+      }
+      let json;
+      try {
+        json = raw ? JSON.parse(raw) : {};
+      } catch {
+        return { ok:false, error: "Non-JSON: " + raw.slice(0, 200) };
+      }
       return json;
     }
 
@@ -261,6 +285,15 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 ﻿(function(global){
-  const ADDRESS = 'rsRy14FvipgqudiGmptJBhr1RtpsgfzKMM';
+  const ADDRESS = 'rPqbs9C8r5L4g5dtTyn3UeWhXNywngri5j';
   global.IXH_WALLET = ADDRESS;
 
   function onReady(fn){
@@ -70,6 +70,7 @@
     attachCopyHandlers();
   });
 })(window);
+
 
 
 

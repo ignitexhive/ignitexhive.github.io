@@ -1,5 +1,4 @@
-
-function gaEvent(name, params={}) {
+﻿function gaEvent(name, params={}) {
   if (window.gtag) gtag('event', name, params);
 }
 function isExternalLink(anchor) {
@@ -18,25 +17,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btn && status) {
       btn.addEventListener('click', () => {
         gaEvent('admin_ga_ping', { event_label: 'Manual Ping' });
-        status.textContent = 'Ping sent ✓';
+        status.textContent = 'Ping sent ->';
         setTimeout(() => status.textContent = 'Ready', 1500);
       });
     }
   }
   
-  // Theme toggle
+  // Theme toggle (guarded)
   const root = document.documentElement;
   const toggle = document.getElementById('themeToggle');
-  const saved = localStorage.getItem('theme') || 'dark';
-  if (saved === 'light') root.classList.add('light');
-  toggle.textContent = root.classList.contains('light') ? 'Dark Mode' : 'Light Mode';
-  toggle.addEventListener('click', () => {
-    root.classList.toggle('light');
-    const mode = root.classList.contains('light') ? 'light' : 'dark';
-    localStorage.setItem('theme', mode);
-    toggle.textContent = mode === 'light' ? 'Dark Mode' : 'Light Mode';
-    gaEvent('theme_toggle', { event_label: mode === 'light' ? 'Dark→Light' : 'Light→Dark' });
-  });
+  if (toggle) {
+    const saved = localStorage.getItem('theme') || 'dark';
+    if (saved === 'light') root.classList.add('light');
+    toggle.textContent = root.classList.contains('light') ? 'Dark Mode' : 'Light Mode';
+    toggle.addEventListener('click', () => {
+      root.classList.toggle('light');
+      const mode = root.classList.contains('light') ? 'light' : 'dark';
+      localStorage.setItem('theme', mode);
+      toggle.textContent = mode === 'light' ? 'Dark Mode' : 'Light Mode';
+      gaEvent('theme_toggle', { event_label: mode === 'light' ? 'Dark->Light' : 'Light->Dark' });
+    });
+  }
 
   const cta = document.getElementById('startHere');
   const step1 = document.getElementById('s1');
@@ -62,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(btn.dataset.copy);
-        btn.textContent = 'Copied ✓';
+        btn.textContent = 'Copied!';
         gaEvent('copy_to_clipboard', { event_label: btn.dataset.label || 'Copy' });
         setTimeout(() => (btn.textContent = btn.dataset.reset || 'Copy'), 1400);
       } catch(e) {
@@ -85,3 +86,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+

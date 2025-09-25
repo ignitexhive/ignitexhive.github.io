@@ -1,8 +1,8 @@
-﻿<!doctype html>
+﻿octype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Sign‑Up · IgniteX Hive</title>
+  <title>Sign-Up - IgniteX Hive</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="./assets/styles.css">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-T96TDZ4N9E"></script>
@@ -19,16 +19,15 @@
       <div class="spacer"></div>
       <a class="btn" href="./index.html">Guide</a>
       <a class="btn" href="./manual/index.html">Manual</a>
-      <a class="btn" href="./signup.html">Sign‑Up</a>
+      <a class="btn" href="./signup.html">Sign-Up</a>
       <a class="btn" href="./proof.html">Submit Proof</a>
       <a class="btn" href="./index.html#contact" data-nav="Contact">Contact</a>
-      <!--  <div class="theme"><button id="themeToggle" class="btn" aria-label="Toggle theme">Light Mode</button></div> -->
     </div>
   </nav>
 
   <main class="container">
     <div class="card form-card">
-      <h1>Ignite‑X Larvae Sign‑Up Form</h1>
+      <h1>Ignite-X Larvae Sign-Up Form</h1>
       <p class="small">Fields marked * are required.</p>
 
       <form id="signupForm">
@@ -69,7 +68,7 @@
         <div class="row two">
           <div>
             <label for="wallet">Your XRP Wallet Address (New Joiner) *</label>
-            <input id="wallet" name="wallet" required placeholder="r..." pattern="r[1-9A-HJ-NP-Za-km-z]{24,33}">
+            <input id="wallet" name="wallet" required placeholder="r..." pattern="r[1-9A-HJ-NP-Za-km-z]{24,34}">
             <div class="help">Personal XRP wallet address (starts with r, 25-35 chars).</div>
             <label for="xrpTag">Your XRP Tag ID (10 digits) *</label>
             <input id="xrpTag" name="xrpTag" required pattern="\d{10}" maxlength="10" inputmode="numeric" placeholder="##########">
@@ -77,7 +76,7 @@
           </div>
           <div>
             <label for="succWallet">Successor XRP Wallet Address *</label>
-            <input id="succWallet" name="succWallet" required placeholder="r..." pattern="r[1-9A-HJ-NP-Za-km-z]{24,33}">
+            <input id="succWallet" name="succWallet" required placeholder="r..." pattern="r[1-9A-HJ-NP-Za-km-z]{24,34}">
             <div class="help">Successor wallet address (starts with r, 25-35 chars).</div>
             <label for="succTag">Successor XRP Tag ID (10 digits) *</label>
             <input id="succTag" name="succTag" required pattern="\d{10}" maxlength="10" inputmode="numeric" placeholder="##########">
@@ -99,7 +98,7 @@
   </main>
 
   <script>
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSk2SoBcYyS0Su-4CJkhPycpc6EfAPBTDVbXinkH-3hsvAiEnaAnTwOv3BDdL2yJt_/exec'; // replace with your Apps Script Web App URL
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwrxMZmJxMX-pt-0zbqZpfp5Q8DaZ66NDU9oWIUSmI_4H-QvQX0R6KkJT6bmEecVhng/exec';
 
     const form = document.getElementById('signupForm');
     const msg  = document.getElementById('msg');
@@ -109,22 +108,38 @@
       document.getElementById('clientTs').value = new Date().toISOString();
 
       const fd = new FormData(form);
-      fd.append('action','signup');              // ← add this line
+      fd.append('action','signup');
 
-      show('Submitting… please wait.');
+      show("Submitting, please wait...");
       try {
-        const res = await fetch(WEB_APP_URL, { method: 'POST', body: fd });
-        const data = await res.json();
+        const res = await fetch(WEB_APP_URL, {
+          method: "POST",
+          body: fd,
+          mode: "cors",
+          credentials: "omit",
+        });
+
+        const raw = await res.text();
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status} ${res.statusText}${raw ? ": " + raw : ""}`);
+        }
+
+        let data;
+        try {
+          data = raw ? JSON.parse(raw) : {};
+        } catch (parseErr) {
+          throw new Error("Invalid response from server" + (raw ? ": " + raw : ""));
+        }
+
         if (data.ok) {
-          show('✅ Sign-up received. Check your email for next steps.', false, true);
+          show("Sign-up received. Check your email for next steps.", false, true);
           form.reset();
         } else {
-          show('❌ Error: ' + (data.error || 'Unknown error'), true);
+          show("Error: " + (data.error || "Unknown error"), true);
         }
       } catch (err) {
-        show('❌ Network error: ' + err.message, true);
+        show("Network error: " + (err && err.message ? err.message : err), true);
       }
-    });
 
     function show(text, isError=false, isSuccess=false) {
       msg.style.display = 'block';
@@ -134,11 +149,6 @@
   </script>
 </body>
 </html>
-
-
-
-
-
 
 
 
