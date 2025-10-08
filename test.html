@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>IgniteX Hive � GAS Web App Tester</title>
+  <title>IgniteX Hive - GAS Web App Tester</title>
   <style>
     :root {
       color-scheme: light dark;
@@ -181,7 +181,7 @@ $('btnReset').addEventListener('click', () => {
 
 $('btnGet').addEventListener('click', async () => {
   const url = $('url').value.trim();
-  log('GET ' + url + ' �');
+  log('GET ' + url + ' …');
   try {
     const res = await fetch(url, { method: 'GET' });
     const txt = await res.text();
@@ -193,7 +193,7 @@ $('btnGet').addEventListener('click', async () => {
 
 $('btnPost').addEventListener('click', async () => {
   const url = $('url').value.trim();
-  log('POST ' + url + ' �');
+  log('POST ' + url + ' …');
   try {
     const fd = new FormData();
     fd.append('action', 'signup');
@@ -211,7 +211,12 @@ $('btnPost').addEventListener('click', async () => {
     fd.append('clientTs', stamp);
     if (tsInput) tsInput.value = stamp;
 
-    const debug = Array.from(fd.entries()).map(([k,v]) => ${k} = ).join('\\n');\n    log('POST ' + url + '�\n\n' + debug + '\n');\n    const res = await fetch(url, { method: 'POST', body: fd });
+    const debug = Array.from(fd.entries()).map(([k,v]) => `${k} = ${v}`).join('\n');
+    log('POST ' + url + ' …
+
+' + debug + '
+');
+    const res = await fetch(url, { method: 'POST', body: fd });
     const txt = await res.text();
     try {
       const json = JSON.parse(txt);

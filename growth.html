@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>IgniteX Hive - Growth & Income Flow</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="./assets/styles.css">
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ixhBlack: "#0b0b0b",
+            ixhGold: "#d4af37",
+            ixhDarkYellow: "#b08900"
+          },
+          maxWidth: {
+            '8xl': '90rem' /* 1440px */
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body{ background:#0b0b0b; }
+    .gold-glow { box-shadow: 0 0 28px rgba(212,175,55,0.28), inset 0 0 28px rgba(212,175,55,0.14); }
+    .stroke-\[2\]{ stroke-width:2 }
+  </style>
+</head>
+<body class="text-white">
+  <nav class="nav">
+    <div class="nav-inner">
+      <img src="./assets/hero.png" class="logo" alt="IgniteX Hive">
+      <div class="brand">IgniteX Hive</div>
+      <div class="spacer"></div>
+      <a class="btn" href="./index.html" data-nav="Guide">Guide</a>
+      <a class="btn active" href="./growth.html" data-nav="Growth Demo">Growth Demo</a>
+      <a class="btn" href="./manual/index.html" data-manual data-nav="Manual">Manual</a>
+      <a class="btn" href="./signup.html" data-nav="Sign-Up">Sign-Up</a>
+      <a class="btn" href="./proof.html" data-nav="Submit Proof">Submit Proof</a>
+      <a class="btn" href="./index.html#contact" data-nav="Contact">Contact</a>
+    </div>
+  </nav>
+
+  <main class="max-w-8xl mx-auto px-4 py-6">
+    <h1 class="text-3xl md:text-4xl font-bold text-ixhGold mb-3">
+      Growth & Income Flow - Gen 01 to Gen 08
+    </h1>
+    <p class="text-white/80 mb-6">
+      Watch how a new joiner (YOU) becomes a successor, recruits Gen 01, and how the network expands to Gen 08.
+      Per-generation income appears in the sidebar, and a live total sits above YOU. (Audio voiceover optional.)
+    </p>
+    <!-- React Mount -->
+    <div id="ixh-growth-root" class="rounded-3xl border border-white/10 bg-gradient-to-br from-black via-neutral-900 to-black gold-glow p-5"></div>
+
+  </main>
+
+  <!-- React + ReactDOM (UMD) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <!-- Framer Motion (UMD) - pinned & reliable -->
+  <script src="https://cdn.jsdelivr.net/npm/framer-motion@12.23.12/dist/framer-motion.umd.js"></script>
+
+  <!-- Our runtime (no-build) -->
+  <script src="./assets/js/ixh-growth.js"></script>
+  <script>
+    // Optional voiceover file; put under /assets/audio and point here.
+    // const audioSrc = "./assets/audio/ignitex-voiceover.mp3";
+    const audioSrc = undefined;
+
+
+
+    // Mount the app
+    window.IXH_GROWTH_MOUNT({
+      containerId: "ixh-growth-root",
+      perJoinerAmount: null,
+      gens: [5, 25, 125, 625, 3125, 15625, 78125, 390625],
+      audioSrc,
+      title: "IgniteX Hive - Growth & Income Flow (Gen 01 - Gen 08)",
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
