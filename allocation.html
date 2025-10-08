@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IgniteX Hive - Allocation Process</title>
+  <link rel="stylesheet" href="./assets/styles.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-T96TDZ4N9E"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-T96TDZ4N9E');
+  </script>
+  <style>
+    .allocation-card h1 {
+      margin-bottom: 0.4rem;
+    }
+    .allocation-card p.lede {
+      color: var(--muted);
+      max-width: 720px;
+      margin-bottom: 1.1rem;
+    }
+    .allocation-diagram {
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: radial-gradient(circle at 50% 0%, rgba(212,175,55,0.08), rgba(5,5,7,0.2) 55%, rgba(5,5,7,0.92));
+      position: relative;
+      overflow: hidden;
+      padding: 18px;
+      margin-top: 20px;
+      box-shadow: 0 24px 44px rgba(0, 0, 0, 0.42), inset 0 0 28px rgba(212,175,55,0.12);
+    }
+    .allocation-diagram::after {
+      content: "";
+      position: absolute;
+      inset: 16% 24% auto 24%;
+      height: 180px;
+      background: radial-gradient(circle, rgba(212,175,55,0.28), rgba(212,175,55,0));
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    .allocation-diagram svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .flow-line {
+      stroke: url(#flowGradient);
+      stroke-width: 6;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 180;
+      stroke-dashoffset: 180;
+      opacity: 0.18;
+    }
+    .flow-line.is-active {
+      opacity: 1;
+      animation: flowReveal 1.4s ease-out forwards, flowLoop 3.8s linear infinite 1.4s;
+    }
+    @keyframes flowReveal {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+    @keyframes flowLoop {
+      to {
+        stroke-dashoffset: -360;
+      }
+    }
+    .allocation-node {
+      fill: rgba(12, 12, 18, 0.92);
+      stroke: rgba(212,175,55,0.35);
+      stroke-width: 2.6;
+      filter: drop-shadow(0 12px 32px rgba(8, 8, 12, 0.45));
+      transition: transform 0.45s ease, filter 0.45s ease, stroke 0.45s ease;
+    }
+    .allocation-node--joiner {
+      fill: rgba(212,175,55,0.12);
+      stroke: rgba(212,175,55,0.58);
+    }
+    .allocation-node.is-active {
+      transform: scale(1.05);
+      filter: drop-shadow(0 20px 38px rgba(212,175,55,0.35));
+      stroke: rgba(212,175,55,0.75);
+    }
+    .node-label,
+    .node-amount,
+    .node-meta {
+      font-family: "Manrope", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+      text-anchor: middle;
+    }
+    .node-label {
+      fill: var(--text);
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .node-amount {
+      fill: var(--accent);
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .node-meta {
+      fill: var(--muted);
+      font-size: 14px;
+      letter-spacing: 0.02em;
+    }
+    .node-meta strong {
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .spark {
+      fill: rgba(212,175,55,0.32);
+      opacity: 0;
+      transform-origin: center;
+    }
+    .spark.is-active {
+      animation: sparkPulse 2.6s ease-in-out infinite;
+    }
+    @keyframes sparkPulse {
+      0%, 100% { opacity: 0.05; transform: scale(0.9); }
+      40% { opacity: 0.42; transform: scale(1.1); }
+      60% { opacity: 0.24; transform: scale(1.03); }
+    }
+    .flow-coin {
+      fill: url(#coinGradient);
+      opacity: 0;
+      filter: drop-shadow(0 8px 22px rgba(212,175,55,0.5));
+      transition: opacity 0.28s ease;
+    }
+    .flow-coin.is-active {
+      opacity: 1;
+    }
+    .breakdown-grid {
+      gap: 20px;
+    }
+    .grid.cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    @media (max-width: 960px) {
+      .grid.cols-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 640px) {
+      .grid.cols-3 {
+        grid-template-columns: 1fr;
+      }
+      .allocation-diagram {
+        padding: 14px;
+      }
+    }
+    .breakdown-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.12rem;
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+    .breakdown-card p {
+      margin: 0 0 12px;
+      color: var(--muted);
+    }
+    .amount-callout {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+    }
+    .amount-callout span {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      margin-left: 4px;
+    }
+    .progress-track {
+      position: relative;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      overflow: hidden;
+      border: 1px solid rgba(212,175,55,0.14);
+      margin-bottom: 12px;
+    }
+    .progress-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      background: linear-gradient(90deg, rgba(212,175,55,0.85), rgba(212,175,55,0.4));
+      border-radius: inherit;
+      width: 0%;
+      box-shadow: 0 0 18px rgba(212,175,55,0.32);
+    }
+    .progress-fill.is-active {
+      transition: width 1.25s ease-out;
+    }
+    .list-compact {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.55;
+    }
+    .list-compact li + li {
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <img src="./assets/hero.png" class="logo" alt="IgniteX Hive">
+      <div class="brand">IgniteX Hive</div>
+      <div class="spacer"></div>
+      <a class="btn" href="./index.html" data-nav="Guide">Guide</a>
+      <a class="btn active" href="./allocation.html" data-nav="Allocation Process">Allocation Process</a>
+      <a class="btn" href="./growth.html" data-nav="Growth Demo">Growth Demo</a>
+      <a class="btn" href="./manual/index.html" data-manual data-nav="Manual">Manual</a>
+      <a class="btn" href="./signup.html" data-nav="Sign-Up">Sign-Up</a>
+      <a class="btn" href="./proof.html" data-nav="Submit Proof">Submit Proof</a>
+      <a class="btn" href="./index.html#contact" data-nav="Contact">Contact</a>
+    </div>
+  </nav>
+
+  <main class="container" id="allocation">
+    <div class="section">
+      <div class="card allocation-card">
+        <span class="badge">Your RM150 Distribution</span>
+        <h1>Your Allocation Flow</h1>
+        <p class="lede">
+          As the newest joiner, you steward <strong>RM150</strong> the moment you’re confirmed. The map below is staged from
+          your point of view: watch how your coins leave your wallet and land with IgniteX Hive, your successor, and each
+          predecessor.
+        </p>
+        <p class="lede">
+          Follow each glow pulse before you open Luno. It mirrors the order you will send the coins, giving you a preview of
+          the amounts, recipients, and why each transfer matters.
+        </p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="card">
+        <h2>Animated Coin Flow</h2>
+        <p class="small" style="margin-top: 6px;">
+          Watch your coin travel to each destination. The order matches your Luno workflow — company reserve first, then your
+          immediate successor, followed by every predecessor generation.
+        </p>
+        <div class="allocation-diagram" role="img" aria-label="Animated diagram showing new joiner's RM150 allocation across company, successor, and predecessors">
+          <svg viewBox="0 0 800 520" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#d4af37" stop-opacity="0.92"></stop>
+                <stop offset="100%" stop-color="#b08900" stop-opacity="0.65"></stop>
+              </linearGradient>
+              <radialGradient id="nodeGlow" cx="50%" cy="50%" r="65%">
+                <stop offset="0%" stop-color="rgba(212,175,55,0.38)"></stop>
+                <stop offset="100%" stop-color="rgba(12,12,18,0.0)"></stop>
+              </radialGradient>
+              <radialGradient id="coinGradient" cx="50%" cy="50%" r="60%">
+                <stop offset="0%" stop-color="#fff5d6"></stop>
+                <stop offset="55%" stop-color="#f3c969"></stop>
+                <stop offset="100%" stop-color="#b88900"></stop>
+              </radialGradient>
+              <marker id="arrowHead" markerWidth="14" markerHeight="14" refX="10" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+                <path d="M0,0 L12,6 L0,12 L3.8,6 Z" fill="#d4af37"></path>
+              </marker>
+            </defs>
+
+            <g class="diagram-core">
+              <circle class="allocation-node allocation-node--joiner is-active" data-activate-order="0" cx="400" cy="260" r="86"></circle>
+              <circle class="spark is-active" cx="400" cy="260" r="118"></circle>
+              <text class="node-label" x="400" y="222">New Joiner</text>
+              <text class="node-amount" x="400" y="258" data-amount="150" data-amount-order="0" data-prefix="RM ">RM 0</text>
+              <text class="node-meta" x="400" y="288">Total Contribution</text>
+            </g>
+
+            <path id="flow-predecessors" class="flow-line" data-activate-order="3" d="M400 260 C400 320 400 368 400 416" marker-end="url(#arrowHead)"></path>
+            <path id="flow-successor" class="flow-line" data-activate-order="2" d="M400 260 C460 260 528 260 628 260" marker-end="url(#arrowHead)"></path>
+            <path id="flow-company" class="flow-line" data-activate-order="1" d="M400 260 C400 210 400 150 400 94" marker-end="url(#arrowHead)"></path>
+
+            <g data-activate-order="1">
+              <circle class="allocation-node" cx="400" cy="78" r="68"></circle>
+              <text class="node-label" x="400" y="48">IgniteX Hive</text>
+              <text class="node-label" x="400" y="68">Company Reserve</text>
+              <text class="node-amount" x="400" y="100" data-amount="50" data-amount-order="1" data-prefix="RM ">RM 0</text>
+              <text class="node-meta" x="400" y="124">Operations &amp; Platform</text>
+            </g>
+
+            <g data-activate-order="2">
+              <circle class="allocation-node" cx="660" cy="260" r="64"></circle>
+              <text class="node-label" x="660" y="230">Existing Successor</text>
+              <text class="node-amount" x="660" y="262" data-amount="30" data-amount-order="2" data-prefix="RM ">RM 0</text>
+              <text class="node-meta" x="660" y="288">Immediate Upline Reward</text>
+            </g>
+
+            <g data-activate-order="3">
+              <circle class="allocation-node" cx="400" cy="440" r="72"></circle>
+              <text class="node-label" x="400" y="412">Predecessors</text>
+              <text class="node-amount" x="400" y="444" data-amount="70" data-amount-order="3" data-prefix="RM ">RM 0</text>
+              <text class="node-meta" x="400" y="468">RM10 x 7 generations</text>
+            </g>
+
+            <g data-activate-order="3">
+              <circle class="spark" cx="330" cy="472" r="10"></circle>
+              <circle class="spark" cx="360" cy="488" r="12"></circle>
+              <circle class="spark" cx="400" cy="496" r="9"></circle>
+              <circle class="spark" cx="440" cy="488" r="11"></circle>
+              <circle class="spark" cx="470" cy="472" r="10"></circle>
+            </g>
+
+            <circle class="flow-coin" data-coin-order="1" data-flow-path="flow-company" r="12" cx="400" cy="260"></circle>
+            <circle class="flow-coin" data-coin-order="2" data-flow-path="flow-successor" r="12" cx="400" cy="260"></circle>
+            <circle class="flow-coin" data-coin-order="3" data-flow-path="flow-predecessors" r="12" cx="400" cy="260"></circle>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="grid cols-3 breakdown-grid">
+        <div class="card breakdown-card" data-activate-order="1">
+          <h3>1. Company Reserve</h3>
+          <div class="amount-callout" data-amount="50" data-amount-order="1" data-prefix="RM ">RM 0<span>33%</span></div>
+          <div class="progress-track">
+            <span class="progress-fill" data-fill="33.33" data-fill-order="1"></span>
+          </div>
+          <p>Secures platform upkeep, compliance documentation, tooling, and cross-border liquidity buffers that make your entry possible.</p>
+          <ul class="list-compact">
+            <li>Treat this transfer as your first send before moving to individual wallets.</li>
+            <li>It funds the moderators and infrastructure supporting your on-ramp.</li>
+          </ul>
+        </div>
+        <div class="card breakdown-card" data-activate-order="2">
+          <h3>2. Existing Successor</h3>
+          <div class="amount-callout" data-amount="30" data-amount-order="2" data-prefix="RM ">RM 0<span>20%</span></div>
+          <div class="progress-track">
+            <span class="progress-fill" data-fill="20" data-fill-order="2"></span>
+          </div>
+          <p>Rewards the upline member who sponsored you, reinforcing the mentorship and coaching you received.</p>
+          <ul class="list-compact">
+            <li>Send right after the company transfer is confirmed on Luno.</li>
+            <li>Locks in your place as the next successor before you bring in new members.</li>
+          </ul>
+        </div>
+        <div class="card breakdown-card" data-activate-order="3">
+          <h3>3. Seven Predecessors</h3>
+          <div class="amount-callout" data-amount="70" data-amount-order="3" data-prefix="RM ">RM 0<span>47%</span></div>
+          <div class="progress-track">
+            <span class="progress-fill" data-fill="46.67" data-fill-order="3"></span>
+          </div>
+          <p>Each of the seven prior generations receives RM10, sustaining the lineage that eventually positioned you as successor.</p>
+          <ul class="list-compact">
+            <li>Use the Master Copy to verify each wallet + tag.</li>
+            <li>Document every send - you'll upload all seven screenshots to the Larvae proof submission.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="card note">
+        <b>Reminder:</b> Always cross-check wallet addresses and Tag IDs before confirming. Allow a short buffer between each transfer to avoid rate limits, then upload all screenshots to the Proof submission form.
+      </div>
+    </div>
+  </main>
+
+  <footer class="container">
+    <div class="callout">
+      <h3>Need Help?</h3>
+      <p>Join our Telegram support group - https://tg.pe/yYDH. You can also reach the IgniteX Hive moderators for assistance.</p>
+      <p class="small">This guide is for educational purposes. Crypto assets are volatile - only send what you can afford and always verify the recipient wallet and Tag ID.</p>
+    </div>
+    <p class="small">&copy; 2025 IgniteX Hive. All rights reserved.</p>
+  </footer>
+
+  <script src="./assets/js/ixh-allocation.js"></script>
+</body>
+</html>
