@@ -32,12 +32,10 @@
       <a class="btn" href="./index.html#contact" data-nav="Contact">Contact</a>
     </div>
   </nav>
-
   <main class="container">
     <div class="card form-card">
       <h1>Submit Proof of Transaction</h1>
       <p class="small">Attach the required screenshot (same phone, unedited). Fields marked * are required.</p>
-
       <form id="proofForm">
         <div class="row two">
           <div>
@@ -49,7 +47,6 @@
             <input id="email" name="email" type="email" placeholder="you@example.com">
           </div>
         </div>
-
         <div class="row two">
           <div>
             <label for="wallet">Wallet Address *</label>
@@ -60,7 +57,6 @@
             <input id="tagId" name="tagId" required>
           </div>
         </div>
-
         <div class="row two">
           <div>
             <label for="amountMYR">Amount (MYR) *</label>
@@ -71,7 +67,6 @@
             <input id="txId" name="txId" required>
           </div>
         </div>
-
         <div class="row">
           <div>
             <label for="proof">Screenshot (PNG/JPG, max ~10MB) *</label>
@@ -79,27 +74,20 @@
             <div class="help">Must show: “Sent Ripple to…”, XRP amount, timestamp, XRP Tag, Transaction ID. Unedited.</div>
           </div>
         </div>
-
         <input type="hidden" name="clientTs" id="clientTs">
-
         <div class="row">
           <button class="btn" type="submit">Submit</button>
         </div>
       </form>
-
       <div id="msg" class="card" style="display:none;margin-top:14px;"></div>
     </div>
   </main>
-
   <script>
     const WEB_APP_URL = 'YOUR_WEB_APP_URL'; // ← paste your Apps Script Web App URL here
-
     const form = document.getElementById('proofForm');
     const msg  = document.getElementById('msg');
-
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-
       // Basic client-side checks
       const file = document.getElementById('proof').files[0];
       if (!file) return;
@@ -107,10 +95,8 @@
         show('Please upload a file under 10MB.', true);
         return;
       }
-
       // Timestamp
       document.getElementById('clientTs').value = new Date().toISOString();
-
       const fd = new FormData(form);
       show('Submitting, please wait...');
       try {
@@ -126,17 +112,26 @@
         show('Network error: ' + err.message, true);
       }
     });
-
     function show(text, isError=false, isSuccess=false) {
       msg.style.display = 'block';
       msg.className = 'card ' + (isError ? 'error' : (isSuccess ? 'success' : ''));
       msg.textContent = text;
     }
   </script>
+
+<footer id="site-footer" style="margin-top:40px;padding:24px 0;border-top:1px solid rgba(255,255,255,0.08);text-align:center;font-size:14px;">
+  <div class="container">
+    <p style="margin:6px 0;">
+      <a href="terms.html">Terms &amp; Conditions</a> &bull;
+      <a href="privacy.html">Privacy Policy</a> &bull;
+      <a href="data_usage.html">Data Usage</a> &bull;
+      <a href="risk_disclosure.html">Financial Risk Disclosure</a>
+    </p>
+    <p style="margin:6px 0;opacity:0.8;">IgniteX Hive operates under principles of financial integrity, anti-corruption, environmental sustainability, consumer protection, and regulatory compliance.</p>
+    <p style="opacity:0.7;margin:6px 0;">© 2025 IgniteX Hive. All rights reserved.</p>
+  </div>
+</footer>
+
 </body>
 </html>
-
-
-
-
 

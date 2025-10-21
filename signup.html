@@ -9,6 +9,9 @@
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config','G-T96TDZ4N9E');</script>
   <style>
     .form-card{max-width:760px;margin:24px auto}
+    .program-banner{background:rgba(212,175,55,0.08);border:1px dashed rgba(212,175,55,0.45);border-radius:14px;padding:16px;margin-bottom:18px}
+    .program-banner strong{color:var(--accent)}
+    .credential-note{font-size:0.9rem;color:var(--muted)}
   </style>
 </head>
 <body>
@@ -26,14 +29,33 @@
       <a class="btn" href="./index.html#contact" data-nav="Contact">Contact</a>
     </div>
   </nav>
-
   <main class="container">
     <div class="card form-card">
       <h1>Ignite-X Larvae Sign-Up Form</h1>
       <p class="small">Fields marked * are required.</p>
-
+      <div class="program-banner">
+        <strong>Fire AntZ (FAZ) Preview:</strong> The raffle experience is still under construction. We are onboarding early members now so you can join the draw once the doors open. Choose IXH or FAZ below and we will notify you as soon as access is live.
+      </div>
       <form id="signupForm">
-
+        <fieldset class="card" style="margin-bottom:18px;padding:16px;border-radius:12px;">
+          <legend style="font-weight:600;letter-spacing:.02em;padding:0 6px;">Project Selection *</legend>
+          <div class="row two" style="margin-top:8px;">
+            <label style="display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);cursor:pointer;">
+              <input type="radio" name="program" value="IXH_CORE" required style="margin-top:4px;">
+              <span>
+                <strong>IgniteX Hive (IXH)</strong><br>
+                Core growth allocation network with verified wallet lineage.
+              </span>
+            </label>
+            <label style="display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid rgba(212,175,55,0.35);border-radius:12px;background:rgba(212,175,55,0.08);cursor:pointer;">
+              <input type="radio" name="program" value="FAZ_RAFFLE" required style="margin-top:4px;">
+              <span>
+                <strong>Fire AntZ (FAZ)</strong><br>
+                Raffle ticket system (beta). <em>Portal under construction �?" sign-ups open.</em>
+              </span>
+            </label>
+          </div>
+        </fieldset>
         <div class="row two">
           <div>
             <label for="name">Name *</label>
@@ -44,14 +66,12 @@
             <input id="email" name="email" type="email" required placeholder="you@example.com">
           </div>
         </div>
-
         <div class="row">
           <div>
             <label for="address">Mailing Address *</label>
             <textarea id="address" name="address" required placeholder="Street, City, State, Postcode, Country"></textarea>
           </div>
         </div>
-
         <div class="row two">
           <div>
             <label for="nationality">Nationality *</label>
@@ -66,7 +86,6 @@
             <input id="telegram" name="telegram" required placeholder="@username">
           </div>
         </div>
-
         <div class="row two">
           <div>
             <label for="wallet">Your XRP Wallet Address (New Joiner) *</label>
@@ -85,33 +104,71 @@
             <div class="help">Numeric, exactly 10 digits.</div>
           </div>
         </div>
-
+        <fieldset class="card" style="margin:12px 0;padding:16px;border-radius:12px;">
+          <legend style="font-weight:600;letter-spacing:.02em;padding:0 6px;">Portal Credentials *</legend>
+          <p class="credential-note">Create a password you'll use once the secure portal launches. Minimum 12 characters including letters and numbers.</p>
+          <div class="row two" style="margin-top:8px;">
+            <div>
+              <label for="portalPassword">Create Password *</label>
+              <input id="portalPassword" name="portalPassword" type="password" minlength="12" autocomplete="new-password" required>
+            </div>
+            <div>
+              <label for="portalPasswordConfirm">Confirm Password *</label>
+              <input id="portalPasswordConfirm" name="portalPasswordConfirm" type="password" minlength="12" autocomplete="new-password" required>
+            </div>
+          </div>
+        </fieldset>
         <input type="hidden" name="clientTs" id="clientTs">
-
         <div class="row">
           <button class="btn" type="submit">Submit</button>
         </div>
-      </form>
+      
+<!-- IXH Legal & Compliance Consent -->
+<div class="legal-consent" id="consentSection" style="margin-top:24px;padding:16px;border:1px solid rgba(255,255,255,0.15);border-radius:12px;background:rgba(15,15,22,0.55);">
+  <label style="display:flex;align-items:flex-start;gap:8px;">
+    <input type="checkbox" id="legalConsent" required style="margin-top:4px;">
+    <span>
+      I/We have read and understood the 
+      <a href="privacy.html" target="_blank">Privacy Policy</a>, 
+      <a href="terms.html" target="_blank">Terms &amp; Conditions</a>, 
+      <a href="data_usage.html" target="_blank">Data Usage Policy</a>, and 
+      <a href="risk_disclosure.html" target="_blank">Financial Risk Disclosure</a>, and hereby consent to abide by the regulations of IgniteX Hive including PDPA 2010, AMLA 2001, MACC Act 2009, and Consumer Protection Act 1999.
+    </span>
+  </label>
+  <p style="font-size:13px;opacity:0.8;margin-top:8px;">
+    <strong>Ringkas (BM):</strong> Saya/Kami bersetuju dengan polisi privasi, terma &amp; syarat, dasar penggunaan data, serta pendedahan risiko kewangan dan mematuhi undang-undang Malaysia.
+  </p>
+</div>
 
+</form>
       <div id="msg" class="card" style="display:none;margin-top:14px;"></div>
       <hr>
       <p class="small">After your account is verified (may take up to 24 hours), please proceed to <a href="./proof.html">Submit Proof</a>.</p>
     </div>
   </main>
-
   <script>
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzHRRKLYvsNkQMO_ZQ97KvdITx5Rtl1WQVnVo2zC6mnrKAWpZ0dTksmDDqEV3qIqzMb/exec';
-
     const form = document.getElementById('signupForm');
     const msg  = document.getElementById('msg');
-
+    const consentCheckbox = document.getElementById('legalConsent');
+    const passwordInput = document.getElementById('portalPassword');
+    const confirmInput = document.getElementById('portalPasswordConfirm');
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (consentCheckbox && !consentCheckbox.checked) {
+        show('Please agree to the legal and compliance consent before continuing.', true);
+        consentCheckbox.focus();
+        return;
+      }
+      const chosenProgram = form.querySelector('input[name="program"]:checked');
+      if (!chosenProgram) {
+        show('Select IgniteX Hive or Fire AntZ to continue.', true);
+        return;
+      }
+      if (!validatePassword()) return;
       document.getElementById('clientTs').value = new Date().toISOString();
-
       const fd = new FormData(form);
       fd.append('action','signup');
-
       show('Submitting, please wait...');
       try {
         const res = await fetch(WEB_APP_URL, { method: 'POST', body: fd });
@@ -126,22 +183,42 @@
         show('Network error: ' + err.message, true);
       }
     });
-
     function show(text, isError=false, isSuccess=false) {
       msg.style.display = 'block';
       msg.className = 'card ' + (isError ? 'error' : (isSuccess ? 'success' : ''));
       msg.textContent = text;
     }
+    function validatePassword() {
+      const pwd = passwordInput.value || '';
+      const confirm = confirmInput.value || '';
+      const strongEnough = pwd.length >= 12 && /[A-Za-z]/.test(pwd) && /\d/.test(pwd);
+      if (!strongEnough) {
+        show('Password must be at least 12 characters and include letters and numbers.', true);
+        passwordInput.focus();
+        return false;
+      }
+      if (pwd !== confirm) {
+        show('Password confirmation does not match.', true);
+        confirmInput.focus();
+        return false;
+      }
+      return true;
+    }
   </script>
+
+<footer id="site-footer" style="margin-top:40px;padding:24px 0;border-top:1px solid rgba(255,255,255,0.08);text-align:center;font-size:14px;">
+  <div class="container">
+    <p style="margin:6px 0;">
+      <a href="terms.html">Terms &amp; Conditions</a> &bull;
+      <a href="privacy.html">Privacy Policy</a> &bull;
+      <a href="data_usage.html">Data Usage</a> &bull;
+      <a href="risk_disclosure.html">Financial Risk Disclosure</a>
+    </p>
+    <p style="margin:6px 0;opacity:0.8;">IgniteX Hive operates under principles of financial integrity, anti-corruption, environmental sustainability, consumer protection, and regulatory compliance.</p>
+    <p style="opacity:0.7;margin:6px 0;">© 2025 IgniteX Hive. All rights reserved.</p>
+  </div>
+</footer>
+
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-

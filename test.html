@@ -79,13 +79,11 @@
 <body>
   <h1>IgniteX Hive Google Apps Script Tester</h1>
   <p>This page mirrors the <code>signup.html</code> payload. Update the fields below and click <strong>POST signup</strong> to make sure the production Web App accepts your data.</p>
-
   <fieldset>
     <legend>Web App Endpoint</legend>
     <label for="url">Deployed /exec URL</label>
     <input id="url" value="https://script.google.com/macros/s/AKfycbzHRRKLYvsNkQMO_ZQ97KvdITx5Rtl1WQVnVo2zC6mnrKAWpZ0dTksmDDqEV3qIqzMb/exec" />
   </fieldset>
-
   <fieldset>
     <legend>Signup Payload</legend>
     <div class="row two">
@@ -98,10 +96,8 @@
         <input id="email" type="email" value="test@example.com" />
       </div>
     </div>
-
     <label for="address">Mailing Address *</label>
     <textarea id="address" rows="3">123 Sample Street, Kuala Lumpur, MY</textarea>
-
     <div class="row three">
       <div>
         <label for="nationality">Nationality *</label>
@@ -116,7 +112,6 @@
         <input id="clientTs" placeholder="autofilled on submit" />
       </div>
     </div>
-
     <div class="row two">
       <div>
         <label for="wallet">Joiner Wallet *</label>
@@ -127,7 +122,6 @@
         <input id="succWallet" value="rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe" />
       </div>
     </div>
-
     <div class="row two">
       <div>
         <label for="xrpTag">Joiner Tag (10 digits) *</label>
@@ -139,15 +133,12 @@
       </div>
     </div>
   </fieldset>
-
   <div class="btn-row">
     <button id="btnGet">GET ping</button>
     <button id="btnPost">POST signup</button>
     <button id="btnReset" class="secondary">Reset Fields</button>
   </div>
-
   <pre id="out">Ready. Update any fields and run a test.</pre>
-
 <script>
 const $ = id => document.getElementById(id);
 const OUTPUT = $('out');
@@ -162,11 +153,9 @@ const DEFAULTS = {
   xrpTag: '1234567890',
   succTag: '0987654321',
 };
-
 function log(text) {
   OUTPUT.textContent = text;
 }
-
 function resetFields() {
   Object.entries(DEFAULTS).forEach(([key, val]) => {
     if ($(key)) $(key).value = val;
@@ -174,11 +163,9 @@ function resetFields() {
   if ($('clientTs')) $('clientTs').value = '';
   log('Fields reset to defaults.');
 }
-
 $('btnReset').addEventListener('click', () => {
   resetFields();
 });
-
 $('btnGet').addEventListener('click', async () => {
   const url = $('url').value.trim();
   log('GET ' + url + ' …');
@@ -190,14 +177,12 @@ $('btnGet').addEventListener('click', async () => {
     log('GET failed: ' + err.message);
   }
 });
-
 $('btnPost').addEventListener('click', async () => {
   const url = $('url').value.trim();
   log('POST ' + url + ' …');
   try {
     const fd = new FormData();
     fd.append('action', 'signup');
-
     const fields = ['name','address','email','nationality','wallet','succWallet','xrpTag','succTag','telegram'];
     fields.forEach((id) => {
       const input = $(id);
@@ -205,15 +190,12 @@ $('btnPost').addEventListener('click', async () => {
         fd.append(id, (input.value || '').trim());
       }
     });
-
     const tsInput = $('clientTs');
     const stamp = new Date().toISOString();
     fd.append('clientTs', stamp);
     if (tsInput) tsInput.value = stamp;
-
     const debug = Array.from(fd.entries()).map(([k,v]) => `${k} = ${v}`).join('\n');
     log('POST ' + url + ' …
-
 ' + debug + '
 ');
     const res = await fetch(url, { method: 'POST', body: fd });
@@ -228,10 +210,24 @@ $('btnPost').addEventListener('click', async () => {
     log('POST failed: ' + err.message);
   }
 });
-
 // initialise defaults on load
 resetFields();
 </script>
+
+<footer id="site-footer" style="margin-top:40px;padding:24px 0;border-top:1px solid rgba(255,255,255,0.08);text-align:center;font-size:14px;">
+  <div class="container">
+    <p style="margin:6px 0;">
+      <a href="terms.html">Terms &amp; Conditions</a> · 
+      <a href="privacy.html">Privacy Policy</a> · 
+      <a href="data_usage.html">Data Usage</a> · 
+      <a href="risk_disclosure.html">Financial Risk Disclosure</a> · 
+      <a href="consent.html">Consent</a>
+    </p>
+    <p style="margin:6px 0;">Support: <a href="mailto:ignitexhive@gmail.com">ignitexhive@gmail.com</a></p>
+    <p style="margin:6px 0;opacity:0.8;">IgniteX Hive operates under principles of financial integrity, anti-corruption, environmental sustainability, consumer protection, and regulatory compliance.</p>
+    <p style="opacity:0.7;margin:6px 0;">© 2025 IgniteX Hive. All rights reserved.</p>
+  </div>
+</footer>
+
 </body>
 </html>
-

@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -57,16 +57,17 @@
     }
     .flow-line.is-active {
       opacity: 1;
-      animation: flowReveal 1.4s ease-out forwards, flowLoop 3.8s linear infinite 1.4s;
+      animation: flowReveal 1.4s ease-out forwards;
+    }
+    .flow-line--hidden,
+    .flow-line--hidden.is-active {
+      stroke: none;
+      opacity: 0;
+      animation: none;
     }
     @keyframes flowReveal {
       to {
         stroke-dashoffset: 0;
-      }
-    }
-    @keyframes flowLoop {
-      to {
-        stroke-dashoffset: -360;
       }
     }
     .allocation-node {
@@ -81,6 +82,11 @@
       stroke: rgba(212,175,55,0.58);
     }
     .allocation-node.is-active {
+      transform: scale(1.05);
+      filter: drop-shadow(0 20px 38px rgba(212,175,55,0.35));
+      stroke: rgba(212,175,55,0.75);
+    }
+    g.is-active .allocation-node {
       transform: scale(1.05);
       filter: drop-shadow(0 20px 38px rgba(212,175,55,0.35));
       stroke: rgba(212,175,55,0.75);
@@ -119,6 +125,9 @@
       transform-origin: center;
     }
     .spark.is-active {
+      animation: sparkPulse 2.6s ease-in-out infinite;
+    }
+    g.is-active .spark {
       animation: sparkPulse 2.6s ease-in-out infinite;
     }
     @keyframes sparkPulse {
@@ -224,14 +233,13 @@
       <a class="btn" href="./index.html#contact" data-nav="Contact">Contact</a>
     </div>
   </nav>
-
   <main class="container" id="allocation">
     <div class="section">
       <div class="card allocation-card">
         <span class="badge">Your RM150 Distribution</span>
         <h1>Your Allocation Flow</h1>
         <p class="lede">
-          As the newest joiner, you steward <strong>RM150</strong> the moment you’re confirmed. The map below is staged from
+          As the newest joiner, you steward <strong>RM150</strong> the moment you're confirmed. The map below is staged from
           your point of view: watch how your coins leave your wallet and land with IgniteX Hive, your successor, and each
           predecessor.
         </p>
@@ -241,13 +249,13 @@
         </p>
       </div>
     </div>
-
     <div class="section">
       <div class="card">
         <h2>Animated Coin Flow</h2>
         <p class="small" style="margin-top: 6px;">
-          Watch your coin travel to each destination. The order matches your Luno workflow — company reserve first, then your
-          immediate successor, followed by every predecessor generation.
+          Watch your coin travel to each destination. The order matches your Luno workflow - company reserve first, then your
+          immediate successor, followed by every predecessor generation. The predecessor pool pulses seven times so you can
+          confirm each RM10 send.
         </p>
         <div class="allocation-diagram" role="img" aria-label="Animated diagram showing new joiner's RM150 allocation across company, successor, and predecessors">
           <svg viewBox="0 0 800 520" aria-hidden="true" focusable="false">
@@ -269,7 +277,6 @@
                 <path d="M0,0 L12,6 L0,12 L3.8,6 Z" fill="#d4af37"></path>
               </marker>
             </defs>
-
             <g class="diagram-core">
               <circle class="allocation-node allocation-node--joiner is-active" data-activate-order="0" cx="400" cy="260" r="86"></circle>
               <circle class="spark is-active" cx="400" cy="260" r="118"></circle>
@@ -277,49 +284,36 @@
               <text class="node-amount" x="400" y="258" data-amount="150" data-amount-order="0" data-prefix="RM ">RM 0</text>
               <text class="node-meta" x="400" y="288">Total Contribution</text>
             </g>
-
-            <path id="flow-predecessors" class="flow-line" data-activate-order="3" d="M400 260 C400 320 400 368 400 416" marker-end="url(#arrowHead)"></path>
-            <path id="flow-successor" class="flow-line" data-activate-order="2" d="M400 260 C460 260 528 260 628 260" marker-end="url(#arrowHead)"></path>
+            <path id="flow-predecessor" class="flow-line flow-line--hidden" data-activate-order="3" d="M400 260 C340 320 280 360 220 400" marker-end="url(#arrowHead)"></path>
+            <path id="flow-successor" class="flow-line" data-activate-order="2" d="M400 260 C460 260 528 260 628 260"></path>
             <path id="flow-company" class="flow-line" data-activate-order="1" d="M400 260 C400 210 400 150 400 94" marker-end="url(#arrowHead)"></path>
-
             <g data-activate-order="1">
-              <circle class="allocation-node" cx="400" cy="78" r="68"></circle>
+              <circle class="allocation-node" cx="400" cy="78" r="60"></circle>
               <text class="node-label" x="400" y="48">IgniteX Hive</text>
               <text class="node-label" x="400" y="68">Company Reserve</text>
               <text class="node-amount" x="400" y="100" data-amount="50" data-amount-order="1" data-prefix="RM ">RM 0</text>
               <text class="node-meta" x="400" y="124">Operations &amp; Platform</text>
             </g>
-
             <g data-activate-order="2">
-              <circle class="allocation-node" cx="660" cy="260" r="64"></circle>
+              <circle class="allocation-node" cx="660" cy="260" r="52"></circle>
               <text class="node-label" x="660" y="230">Existing Successor</text>
               <text class="node-amount" x="660" y="262" data-amount="30" data-amount-order="2" data-prefix="RM ">RM 0</text>
               <text class="node-meta" x="660" y="288">Immediate Upline Reward</text>
             </g>
-
             <g data-activate-order="3">
-              <circle class="allocation-node" cx="400" cy="440" r="72"></circle>
-              <text class="node-label" x="400" y="412">Predecessors</text>
-              <text class="node-amount" x="400" y="444" data-amount="70" data-amount-order="3" data-prefix="RM ">RM 0</text>
-              <text class="node-meta" x="400" y="468">RM10 x 7 generations</text>
+              <circle class="spark" cx="220" cy="400" r="78"></circle>
+              <circle class="allocation-node" cx="220" cy="400" r="68"></circle>
+              <text class="node-label" x="220" y="364">Predecessors</text>
+              <text class="node-amount" id="predecessorAmount" x="220" y="404" data-amount="70" data-amount-order="3" data-prefix="RM " data-increment="10" data-repeat-count="7" data-start="0">RM 0</text>
+              <text class="node-meta" x="220" y="430">RM10 x 7 generations</text>
             </g>
-
-            <g data-activate-order="3">
-              <circle class="spark" cx="330" cy="472" r="10"></circle>
-              <circle class="spark" cx="360" cy="488" r="12"></circle>
-              <circle class="spark" cx="400" cy="496" r="9"></circle>
-              <circle class="spark" cx="440" cy="488" r="11"></circle>
-              <circle class="spark" cx="470" cy="472" r="10"></circle>
-            </g>
-
             <circle class="flow-coin" data-coin-order="1" data-flow-path="flow-company" r="12" cx="400" cy="260"></circle>
             <circle class="flow-coin" data-coin-order="2" data-flow-path="flow-successor" r="12" cx="400" cy="260"></circle>
-            <circle class="flow-coin" data-coin-order="3" data-flow-path="flow-predecessors" r="12" cx="400" cy="260"></circle>
+            <circle class="flow-coin" data-coin-order="3" data-flow-path="flow-predecessor" r="12" cx="400" cy="260" data-repeat-count="7" data-amount-target="predecessorAmount" data-increment="10" data-final="70"></circle>
           </svg>
         </div>
       </div>
     </div>
-
     <div class="section">
       <div class="grid cols-3 breakdown-grid">
         <div class="card breakdown-card" data-activate-order="1">
@@ -360,14 +354,12 @@
         </div>
       </div>
     </div>
-
     <div class="section">
       <div class="card note">
         <b>Reminder:</b> Always cross-check wallet addresses and Tag IDs before confirming. Allow a short buffer between each transfer to avoid rate limits, then upload all screenshots to the Proof submission form.
       </div>
     </div>
   </main>
-
   <footer class="container">
     <div class="callout">
       <h3>Need Help?</h3>
@@ -376,7 +368,25 @@
     </div>
     <p class="small">&copy; 2025 IgniteX Hive. All rights reserved.</p>
   </footer>
-
   <script src="./assets/js/ixh-allocation.js"></script>
+
+<footer id="site-footer" style="margin-top:40px;padding:24px 0;border-top:1px solid rgba(255,255,255,0.08);text-align:center;font-size:14px;">
+  <div class="container">
+    <p style="margin:6px 0;">
+      <a href="terms.html">Terms &amp; Conditions</a> &bull;
+      <a href="privacy.html">Privacy Policy</a> &bull;
+      <a href="data_usage.html">Data Usage</a> &bull;
+      <a href="risk_disclosure.html">Financial Risk Disclosure</a>
+    </p>
+    <p style="margin:6px 0;opacity:0.8;">IgniteX Hive operates under principles of financial integrity, anti-corruption, environmental sustainability, consumer protection, and regulatory compliance.</p>
+    <p style="opacity:0.7;margin:6px 0;">&copy; 2025 IgniteX Hive. All rights reserved.</p>
+  </div>
+</footer>
+
 </body>
 </html>
+
+
+
+
+

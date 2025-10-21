@@ -28,7 +28,6 @@
       <a class="btn" href="./index.html#contact" data-nav="Contact">Contact</a>
     </div>
   </nav>
-
   <main class="container">
     <div class="card form-card">
       <h1>Submit Proof of Transactions</h1>
@@ -58,7 +57,6 @@
             <div class="help">Numeric, exactly 10 digits.</div>
           </div>
         </div>
-
         <div class="row two">
           <div>
             <label for="email">Email Address *</label>
@@ -69,62 +67,47 @@
             <input id="txId" name="txId" required placeholder="Hash">
           </div>
         </div>
-
         <h2>Upload Screenshots</h2>
         <div class="row">
           <label>Ignite-X Hive (Company) - 1 image (<= 1MB) *</label>
           <input id="imgCompany" name="imgCompany" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" required>
         </div>
-
         <div class="row">
           <label>All 7 Predecessors - 7 images total (<= 10MB combined) *</label>
           <input id="imgPred" name="imgPred" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" multiple required>
           <div class="help">Exactly 7 images recommended.</div>
         </div>
-
         <div class="row">
           <label>Successor - 1 image (<= 1MB) *</label>
           <input id="imgSucc" name="imgSucc" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" required>
         </div>
-
         <input type="hidden" name="clientTs" id="clientTs">
-
         <div class="row">
           <button class="btn" type="submit">Submit</button>
         </div>
-
         <div class="row">
           <progress id="prog" value="0" max="100" style="display:none;width:100%"></progress>
         </div>
       </form>
-
       <div id="msg" class="card" style="display:none;margin-top:14px;"></div>
     </div>
   </main>
-
   <script src="./assets/wallet.js"></script>
-
 <script>
     // Use the SAME working /exec URL you validated earlier
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzHRRKLYvsNkQMO_ZQ97KvdITx5Rtl1WQVnVo2zC6mnrKAWpZ0dTksmDDqEV3qIqzMb/exec';
-
     const form = document.getElementById('proofForm');
     const msg  = document.getElementById('msg');
     const prog = document.getElementById('prog');
-
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const tag = (document.getElementById('xrpTag').value || '').trim();
       if (!/^\d{10}$/.test(tag)) return show('Error: XRP Tag ID must be exactly 10 digits.', true);
-
       const company = document.getElementById('imgCompany').files[0];
       const preds   = Array.from(document.getElementById('imgPred').files || []);
       const succ    = document.getElementById('imgSucc').files[0];
-
       if (!company || !succ || preds.length !== 7)
         return show('Error: Please attach Company (1), exactly 7 Predecessors, and Successor (1).', true);
-
       // ---------- Strict client-side type checks ----------
       const isOk = (f) => {
         const t = (f.type || '').toLowerCase();
@@ -135,18 +118,14 @@
       };
       const bad = [company, ...preds, succ].find(f => !isOk(f));
       if (bad) return show(`Error: Unsupported file "${bad.name}". Only JPG/JPEG/PNG allowed.`, true);
-
       // Size checks
       if (company.size > 1 * 1024 * 1024)  return show('Company screenshot must be 1 MB.', true);
       if (succ.size    > 1 * 1024 * 1024)  return show('Successor screenshot must be 1 MB.', true);
       const totalPred = preds.reduce((n, f) => n + f.size, 0);
       if (totalPred   > 10 * 1024 * 1024)  return show('Predecessors total must be 10 MB.', true);
-
       document.getElementById('clientTs').value = new Date().toISOString();
-
       try {
         show('Initializing...');
-
         // 1) INIT PROOF (server will refuse if Tag folder does NOT exist)
         {
           const fd = new FormData();
@@ -156,7 +135,6 @@
           const init = await fetchJSON(fd);
           if (!init.ok) return show('Error: initProof failed: ' + (init.error || 'Unknown'), true);
         }
-
         // 2) Upload all files sequentially (Base64) with a "kind" label
         const files = [
           { kind: 'company',  file: company },
@@ -169,33 +147,25 @@
           { kind: 'pred7',    file: preds[6] },
           { kind: 'successor',file: succ }
         ];
-
         prog.style.display = 'block';
         prog.value = 0;
-
         for (let i = 0; i < files.length; i++) {
           const { kind, file } = files[i];
-
           // optional compression
           const blob    = await compressImage(file, kind.startsWith('pred') ? 0.85 : 0.9, 1600);
           const wrapped = new File([blob || file], safeName(file.name || (kind + '.jpg')), { type: (blob && blob.type) || file.type || 'image/jpeg' });
-
           const up = await uploadAsBase64(kind, wrapped, tag, document.getElementById('clientTs').value);
           if (!up.ok) return show(`Error: Upload failed for ${kind}: ${up.error || 'Unknown'}`, true);
-
           show(`Uploaded ${kind} (${i + 1}/${files.length})${up.fileURL ? ' ' + up.fileURL : ''}`);
           prog.value = Math.round(((i + 1) / files.length) * 100);
         }
-
         show('All proof images uploaded.', false, true);
         form.reset();
         prog.style.display = 'none';
-
       } catch (err) {
         show('Network error: ' + err.message, true);
       }
     });
-
     // ---- helpers ----
         async function fetchJSON(formData, tries = 2) {
       let lastErr, data;
@@ -212,14 +182,12 @@
       }
       return { ok:false, error:lastErr?.message || "network error" };
     }
-
     function show(text, isError=false, isSuccess=false) {
       msg.style.display = 'block';
       msg.className = (isError ? 'card error' : (isSuccess ? 'card success' : 'card'));
       msg.textContent = text;
     }
     function safeName(name) { return (name || 'upload.jpg').replace(/[^\w\-.]+/g, '_'); }
-
     // Convert a File/Blob to data URL (works reliably across browsers)
     function toDataURL(fileOrBlob) {
       return new Promise((resolve, reject) => {
@@ -229,7 +197,6 @@
         fr.readAsDataURL(fileOrBlob);
       });
     }
-
     async function uploadAsBase64(kind, file, tag, clientTs) {
       const durl = await toDataURL(file);
       const fd   = new FormData();
@@ -240,7 +207,6 @@
       fd.append('mimeType', file.type || 'image/jpeg');
       fd.append('data',     durl);
       fd.append('clientTs', clientTs);
-
       const res = await fetch(WEB_APP_URL, { method:'POST', body: fd });
       const txt = await res.text();
       let json; try { json = JSON.parse(txt); } catch { return { ok:false, error:'Non-JSON: ' + txt.slice(0,120) }; }
@@ -259,31 +225,20 @@
       } catch { return file; }
     }
   </script>
+
+<footer id="site-footer" style="margin-top:40px;padding:24px 0;border-top:1px solid rgba(255,255,255,0.08);text-align:center;font-size:14px;">
+  <div class="container">
+    <p style="margin:6px 0;">
+      <a href="terms.html">Terms &amp; Conditions</a> &bull;
+      <a href="privacy.html">Privacy Policy</a> &bull;
+      <a href="data_usage.html">Data Usage</a> &bull;
+      <a href="risk_disclosure.html">Financial Risk Disclosure</a>
+    </p>
+    <p style="margin:6px 0;opacity:0.8;">IgniteX Hive operates under principles of financial integrity, anti-corruption, environmental sustainability, consumer protection, and regulatory compliance.</p>
+    <p style="opacity:0.7;margin:6px 0;">© 2025 IgniteX Hive. All rights reserved.</p>
+  </div>
+</footer>
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -1,0 +1,93 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IgniteX Hive - Data Usage Policy</title>
+  <link rel="stylesheet" href="./assets/styles.css">
+  <style>
+    body{background:var(--bg);color:var(--text);}
+    .legal-wrapper{max-width:920px;margin:0 auto;padding:32px 24px;}
+    .back-link{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,0.02);color:var(--text);text-decoration:none;font-weight:500;letter-spacing:0.02em;transition:background .2s ease,border-color .2s ease,transform .2s ease;}
+    .back-link:hover{background:rgba(255,255,255,0.08);border-color:rgba(212,175,55,0.24);transform:translateX(-1px);}
+    .back-link span[aria-hidden="true"]{font-size:1.2rem;line-height:1;}
+    .legal-card{margin-top:20px;}
+    .legal-card h1{margin:0 0 0.6rem;font-size:2rem;}
+    .legal-card .small{display:block;margin-bottom:1.4rem;color:var(--muted);}
+    .legal-section + .legal-section{margin-top:1.6rem;}
+    .legal-section h2{margin:0 0 0.6rem;font-size:1.2rem;color:var(--accent);letter-spacing:0.03em;text-transform:uppercase;}
+    .legal-section p{margin:0.4rem 0;color:var(--muted);}
+    .legal-section ul{margin:0.4rem 0 0.4rem 1.2rem;padding:0;color:var(--muted);}
+    .legal-section ul li{margin:0.2rem 0;}
+    .legal-footer{margin-top:48px;padding-bottom:32px;}
+    .legal-footer .links{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 8px;padding:0;list-style:none;color:var(--muted);}
+    .legal-footer .links a{color:var(--muted);}
+    .legal-footer .links a:hover{color:rgba(212,175,55,0.82);}
+  </style>
+</head>
+<body>
+  <main class="legal-wrapper">
+    <a class="back-link" href="./index.html" data-back>
+      <span aria-hidden="true">â†</span>
+      Back
+    </a>
+    <div class="card legal-card">
+      <h1>Data Usage Policy</h1>
+      <span class="small">Effective date: 2025-10-11</span>
+
+      <div class="legal-section">
+        <h2>Analytics &amp; Performance</h2>
+        <p>IgniteX Hive captures logs and anonymised analytics to monitor reliability, diagnose performance issues, and improve platform stability. Essential cookies may be used for session management and security.</p>
+      </div>
+
+      <div class="legal-section">
+        <h2>Personalisation &amp; Communication</h2>
+        <p>We deliver service updates, outage notices, and compliance communications that relate to your account. Optional marketing or campaign messaging is sent only with your consent, which you may withdraw at any time.</p>
+      </div>
+
+      <div class="legal-section">
+        <h2>Compliance &amp; Audit</h2>
+        <p>Operational records may be retained for Anti-Money Laundering and Counter Financing of Terrorism requirements, anti-fraud investigations, security reviews, and audit readiness. This includes obligations under AMLA, the MACC Act, and PDPA.</p>
+      </div>
+
+      <div class="legal-section">
+        <h2>Environmental Considerations</h2>
+        <p>Data storage is reviewed periodically to minimise retention of redundant files, reduce compute load, and limit energy consumption. Vendors are selected with sustainability commitments in mind.</p>
+      </div>
+
+      <div class="legal-section">
+        <h2>Consumer Protections</h2>
+        <p>IgniteX Hive does not sell personal data. Information is shared only with authorised partners and solely for the purposes described in our Privacy Policy and compliance documents.</p>
+        <p><strong>Ringkas (BM):</strong> Data digunakan secara bertanggungjawab untuk analitik, komunikasi penting, pematuhan, dan perlindungan pengguna. Tiada data dijual, dan persetujuan boleh ditarik balik.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="container legal-footer">
+    <ul class="links">
+      <li><a href="terms.html">Terms &amp; Conditions</a></li>
+      <li><a href="privacy.html">Privacy Policy</a></li>
+      <li><a href="data_usage.html">Data Usage</a></li>
+      <li><a href="risk_disclosure.html">Financial Risk Disclosure</a></li>
+    </ul>
+    <p class="small">Support: <a href="mailto:ignitexhive@gmail.com">ignitexhive@gmail.com</a></p>
+    <p class="small">IgniteX Hive operates with principles of financial integrity, anti-corruption, sustainability, consumer protection, and regulatory compliance.</p>
+    <p class="small">&copy; 2025 IgniteX Hive. All rights reserved.</p>
+  </footer>
+
+  <script>
+    (function(){
+      document.querySelectorAll('[data-back]').forEach(function(link){
+        link.addEventListener('click', function(event){
+          event.preventDefault();
+          if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = link.getAttribute('href');
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
